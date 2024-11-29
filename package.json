@@ -2,7 +2,10 @@
     "name": "lift_logger",
     "version": "1.0.0",
     "description": "Lift logger webapp",
-    "main": "back-end/server.js",
+    "engines": {
+        "node": "18.17.x",
+        "npm": "9.6.x"
+    },
     "scripts": {
         "test": "test",
         "postinstall": "cd front-end && npm install && npm run build && cd ../back-end && npm install"

@@ -1,10 +1,5 @@
 import axios from "axios";
 
-const dotenv = require("dotenv").config();
-dotenv.config({
-	path: "../.env",
-});
-
 const baseURL =
 	process.env.NODE_ENV === "production"
 		? "https://lift-logger-4b08aa94a99a.herokuapp.com/"
