@@ -1,6 +1,9 @@
 const express = require("express");
 const { createClient } = require("@supabase/supabase-js");
-require("dotenv").config();
+const path = require("path");
+
+if (process.env.NODE_ENV !== "production")
+	require("dotenv").config({ path: "../.env" });
 const cors = require("cors");
 
 const app = express();
@@ -26,7 +29,7 @@ app.use(liftLogRoutes);
 const liftRoutes = require("./routes/lifts");
 app.use("/lifts", liftRoutes);
 
-app.get("*", (req, res) => {
+app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "../front-end/build/index.html"));
 });
 

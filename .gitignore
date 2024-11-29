@@ -133,3 +133,4 @@ dist
 my_great_big_personal_todo.md
 secrets.txt
 .prettierignore
+front-end/build/
