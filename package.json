@@ -1,0 +1,31 @@
+{
+    "name": "lift_logger",
+    "version": "1.0.0",
+    "description": "Lift logger webapp",
+    "main": "back-end/server.js",
+    "scripts": {
+        "test": "test",
+        "postinstall": "cd front-end && npm install && npm run build && cd ../back-end && npm install",
+        "start": "cd back-end && npm start",
+        "heroku-postbuild": "cd front-end && npm install && npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/JFrieden/lift_logger.git"
+    },
+    "keywords": [
+        "Express",
+        "React",
+        "Postgresql",
+        "Axios",
+        "DataViz",
+        "DataVis",
+        "Lifting"
+    ],
+    "author": "JFrieden",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/JFrieden/lift_logger/issues"
+    },
+    "homepage": "https://github.com/JFrieden/lift_logger#readme"
+}
