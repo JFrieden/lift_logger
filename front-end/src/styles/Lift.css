@@ -1,0 +1,80 @@
+/* Lift.css */
+
+/* General styles for delete button */
+.delete-lift-btn {
+	background-color: var(--default-red);
+	color: white;
+	border: none;
+	padding: 10px; /* Square shape */
+	font-size: 24px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	display: flex;
+	justify-content: center;
+	align-items: center; /* Center the icon inside */
+	border-radius: 6px;
+	width: 60px; /* Square size */
+	height: 60px; /* Square size */
+}
+
+/* Hover effect */
+.delete-lift-btn:hover {
+	background-color: var(--default-red-hover);
+}
+
+/* Header Layout */
+.lift-header {
+	display: flex;
+	flex-direction: column; /* Stack the name and date vertically */
+	justify-content: flex-start; /* Align items at the top */
+	margin-bottom: 10px; /* Space below the header */
+	width: 100%; /* Ensure the header takes up full width */
+}
+
+/* Adjust the lift name and date styling */
+.lift-header h1 {
+	margin: 0; /* Remove margin around the lift name */
+}
+
+.lift-header .lift-date {
+	margin-top: 5px; /* Add a small gap between name and date */
+	color: #666;
+}
+
+/* Container for the header and button */
+.lift-header-container {
+	display: flex;
+	justify-content: space-between; /* Push the button to the far right */
+	align-items: center;
+	width: 100%;
+}
+
+/* For mobile devices */
+@media (max-width: 767px) {
+	.lift-header-container {
+		padding-right: 10px; /* Add space between the right edge and the button */
+	}
+
+	.delete-lift-btn {
+		font-size: 20px; /* Slightly smaller icon for mobile */
+	}
+}
+
+/* For desktop devices */
+@media (min-width: 768px) {
+	.lift-header-container {
+		padding-right: 20px; /* Add space between the right edge and the button */
+	}
+
+	.delete-lift-btn {
+		font-size: 24px; /* Larger icon for desktop */
+	}
+}
+
+.icon-left-button {
+	margin: 10px 0;
+	display: flex; /* Make the button's content appear in a row */
+	align-items: center; /* Vertically align the icon and text */
+	justify-content: center;
+	padding: 8px 12px;
+}

@@ -1,0 +1,92 @@
+/* LandingPage.css */
+
+* {
+	margin: 10px;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: Arial, sans-serif;
+	background-color: #1a1d21; /* Dark gray-blue background */
+	color: #f5f5f5; /* Light text color for dark mode */
+	margin: 10px;
+}
+
+.landing-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	padding: 20px;
+	background-color: #1a1d21; /* Match body background */
+	text-align: center;
+}
+
+.header {
+	margin-bottom: 20px;
+}
+
+.header h1 {
+	font-size: 2em;
+	color: #f5f5f5; /* White text for heading */
+}
+
+.header p {
+	color: #d1d5db; /* Lighter gray for the paragraph */
+	font-size: 1.2em;
+	margin-top: 8px;
+}
+
+.auth-buttons {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+}
+
+.button {
+	padding: 15px;
+	font-size: 1em;
+	border: none;
+	border-radius: 5px;
+	width: 100%;
+	max-width: 300px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.button.sign-up {
+	background-color: var(--default-green);
+	color: #f5f5f5;
+}
+
+.button.sign-up:hover {
+	background-color: var(--default-green-hover); /* Darker green on hover */
+}
+
+.button.login {
+	background-color: var(--default-blue);
+	color: #f5f5f5;
+}
+
+.button.login:hover {
+	background-color: var(--default-blue-hover); /* Darker blue on hover */
+}
+
+/* For larger screens */
+@media (min-width: 768px) {
+	.landing-container {
+		padding: 40px;
+	}
+
+	.header h1 {
+		font-size: 3em;
+	}
+
+	.header p {
+		font-size: 1.5em;
+	}
+}

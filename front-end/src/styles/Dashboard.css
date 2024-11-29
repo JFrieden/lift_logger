@@ -1,0 +1,61 @@
+/* Dashboard container styling */
+.dashboard-container {
+	padding: 20px;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+/* Heading and text styling */
+.dashboard-container h1 {
+	font-size: 24px;
+	color: #ffffff;
+}
+
+.dashboard-container p {
+	font-size: 16px;
+	color: #a0a0a0;
+}
+
+/* lifts list styling */
+.lifts-list {
+	margin-top: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.lift-card {
+	background-color: #1f1f1f;
+	padding: 15px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.lift-card h3 {
+	font-size: 18px;
+	color: #80cbc4;
+	margin: 0;
+}
+
+.lift-card p {
+	font-size: 14px;
+	color: #cfcfcf;
+}
+
+/* Logout button styling */
+.logout-button {
+	margin-top: 20px;
+	background-color: var(--default-red);
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	padding: 10px;
+	cursor: pointer;
+	width: 100%;
+}
+
+.logout-button:hover {
+	background-color: var(--default-red-hover);
+}
