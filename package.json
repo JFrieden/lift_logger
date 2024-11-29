@@ -9,7 +9,8 @@
     "scripts": {
         "test": "test",
         "postinstall": "cd front-end && npm install && npm run build && cd ../back-end && npm install",
-        "start": "cd back-end && npm start"
+        "start": "cd back-end && npm start",
+        "heroku-postbuild": "cd front-end && npm install && npm run build"
     },
     "repository": {
         "type": "git",
