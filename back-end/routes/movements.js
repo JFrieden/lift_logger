@@ -4,22 +4,21 @@ const supabase = require("../supabase");
 const authenticateToken = require("../middleware/authMiddleware");
 
 const checkIfMovementExists = async (name) => {
-	console.log(`Checking ${name} for a database match`);
 	try {
 		const normalizedInput = name.trim().toLowerCase().replace(/\s+/g, "");
 
-		const { data, error } = await supabase
-			.from("movements")
-			.select("id, name")
-			.filter(`replace(lower(name), " ", "")`, "eq", normalizedInput);
+		const { data, error } = await supabase.rpc("check_movement_exists", {
+			input: normalizedInput,
+		});
 		if (error) {
 			console.error("Error querying supabase: ", error);
-			return false;
+			return { exists: error, data: error };
 		}
-		return data.length > 0;
+		const exists = data.length > 0;
+		return { exists: exists, data: data };
 	} catch (err) {
 		console.error("Error checking name existance: ", err);
-		return false;
+		return { exists: err, data: err };
 	}
 };
 
@@ -29,9 +28,9 @@ router.post("/movements", authenticateToken, async (req, res) => {
 	const { name } = req.body;
 	const userId = req.user.id;
 
-	movementDNE = checkIfMovementExists(name);
+	const { exists, data } = await checkIfMovementExists(name);
 
-	if (movementDNE) {
+	if (!exists) {
 		const { data, error } = await supabase
 			.from("movements")
 			.insert([
@@ -52,6 +51,10 @@ router.post("/movements", authenticateToken, async (req, res) => {
 		return res.status(201).json({
 			message: "Movement created successfully",
 			movement: data,
+		});
+	} else {
+		return res.status(409).json({
+			error: `"${data[0].ret_name}" Already Exists`,
 		});
 	}
 });

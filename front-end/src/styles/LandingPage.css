@@ -8,7 +8,7 @@
 
 body {
 	font-family: Arial, sans-serif;
-	background-color: #1a1d21; /* Dark gray-blue background */
+	background-color: var(--background-gray); /* Dark gray-blue background */
 	color: #f5f5f5; /* Light text color for dark mode */
 	margin: 10px;
 }
@@ -20,7 +20,7 @@ body {
 	justify-content: center;
 	min-height: 100vh;
 	padding: 20px;
-	background-color: #1a1d21; /* Match body background */
+	background-color: var(--background-gray); /* Match body background */
 	text-align: center;
 }
 
