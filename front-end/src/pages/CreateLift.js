@@ -18,7 +18,6 @@ const CreateLift = () => {
 					headers: { Authorization: `Bearer ${token}` },
 				}
 			);
-			//   alert('Lift created successfully!');
 			navigate("/home");
 		} catch (error) {
 			console.error("Error creating lift:", error);

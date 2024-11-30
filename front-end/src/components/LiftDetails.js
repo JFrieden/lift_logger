@@ -1,6 +1,8 @@
 //LiftDetails.js
 import React, { useEffect, useState } from "react";
 import axios from "../axios_instance";
+
+import { swalConfirmCancel, swalBasic } from "./SwalCardMixins";
 import { FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 
@@ -21,14 +23,39 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 	}, [liftId, reloadDetails]);
 
 	const deleteLog = async (logId) => {
-		// if (window.confirm("Are you sure you want to delete this movement?")) {
-		try {
-			await axios.delete(`/lift_logs/${logId}`);
-			setLogs((prevLogs) => prevLogs.filter((log) => log.id !== logId));
-		} catch (error) {
-			console.error("Error deleting movement: ", error);
-		}
-		// }
+		swalConfirmCancel
+			.fire({
+				title: "Are You Sure?",
+				text: "This action cannot be undone",
+				showCancelButton: true,
+				confirmButtonText: "Yes, delete!",
+				cancelButtonText: "No, cancel!",
+			})
+			.then(async (result) => {
+				if (result.isConfirmed) {
+					try {
+						await axios.delete(`/lift_logs/${logId}`);
+						setLogs((prevLogs) =>
+							prevLogs.filter((log) => log.id !== logId)
+						);
+					} catch (error) {
+						console.error("Error deleting exercise: ", error);
+					}
+					swalBasic.fire({
+						title: "Deleted!",
+						icon: "success",
+						showConfirmButton: false,
+						timer: 750,
+					});
+				} else {
+					swalBasic.fire({
+						title: "Cancelled",
+						icon: "error",
+						showConfirmButton: false,
+						timer: 750,
+					});
+				}
+			});
 	};
 
 	return (

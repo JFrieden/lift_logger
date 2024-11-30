@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "../axios_instance";
 import { FaCirclePlus } from "react-icons/fa6";
+import { swalBasic } from "./SwalCardMixins";
+import getCssVariable from "../getCssVariable";
 
 const AddMovementForm = ({ liftId, onMovementAdded }) => {
 	// Grouping state into one object for better manageability
@@ -77,11 +79,11 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		} catch (error) {
 			console.error("Error creating new movement: ", error);
 			if (error.status === 409) {
-				alert(
-					`Error Creating ${formData.newMovementName}: ${error.response.data.error}`
-				);
+				swalBasic.fire({
+					text: `Error Creating ${formData.newMovementName}: ${error.response.data.error}`,
+				});
 			} else {
-				alert("Failure Creating New Exercise: ", error.status);
+				swalBasic.fire("Failure Creating New Exercise: ", error.status);
 			}
 		}
 	};

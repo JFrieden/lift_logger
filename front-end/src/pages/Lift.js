@@ -2,9 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../axios_instance";
+
+import Spinner from "../components/Spinner";
+import { swalBasic, swalConfirmCancel } from "../components/SwalCardMixins";
 import { FaTrash } from "react-icons/fa"; // Importing FontAwesome trashcan icon
 import AddMovementForm from "../components/AddMovementForm";
 import LiftDetails from "../components/LiftDetails";
+
 import "../styles/LiftCard.css";
 import "../styles/Lift.css";
 
@@ -29,14 +33,37 @@ const LiftPage = () => {
 
 	// DELETE Lift
 	const deleteLift = async () => {
-		if (window.confirm("Are you sure you want to delete this lift?")) {
-			try {
-				await axios.delete(`/lifts/${liftId}`);
-				navigate("/home");
-			} catch (error) {
-				console.error("Error deleting lift: ", error);
-			}
-		}
+		swalConfirmCancel
+			.fire({
+				title: "Are You Sure?",
+				text: "This action cannot be undone",
+				showCancelButton: true,
+				confirmButtonText: "Yes, delete!",
+				cancelButtonText: "No, cancel!",
+			})
+			.then(async (result) => {
+				if (result.isConfirmed) {
+					try {
+						await axios.delete(`/lifts/${liftId}`);
+						navigate("/home");
+					} catch (error) {
+						console.error("Error deleting lift: ", error);
+					}
+					swalBasic.fire({
+						title: "Deleted!",
+						icon: "success",
+						showConfirmButton: false,
+						timer: 750,
+					});
+				} else {
+					swalBasic.fire({
+						title: "Cancelled",
+						icon: "error",
+						showConfirmButton: false,
+						timer: 750,
+					});
+				}
+			});
 	};
 
 	const handleMovementAdded = () => {
@@ -72,7 +99,7 @@ const LiftPage = () => {
 					/>
 				</>
 			) : (
-				<p>Loading lift details...</p>
+				<Spinner />
 			)}
 		</div>
 	);

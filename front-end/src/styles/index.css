@@ -6,6 +6,9 @@
 	--default-red-hover: #c0392b;
 	--default-blue-hover: #007bb5;
 	--default-green-hover: #43a047;
+
+	--background-gray: #1a1d21;
+	--card-gray: #2d3136;
 }
 
 body {
