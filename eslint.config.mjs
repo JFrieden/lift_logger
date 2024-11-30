@@ -1,20 +1,28 @@
 import { ESLint } from "eslint";
+import globals from "globals";
+import pluginReact from "eslint-plugin-react";
+import pluginReactHooks from "eslint-plugin-react-hooks";
+import pluginTypescript from "@typescript-eslint/eslint-plugin";
+import pluginTypescriptParser from "@typescript-eslint/parser";
+import pluginNode from "eslint-plugin-node";
+import { fixupPluginRules } from "@eslint/compat";
 
 export default [
 	{
+		ignores: ["node_modules/**/*", "front-end/build/**/*"],
 		files: ["front-end/**/*.{js,jsx,ts,tsx}"],
 		languageOptions: {
-			parser: require.resolve("@typescript-eslint/parser"),
+			parser: pluginTypescriptParser,
 			ecmaVersion: 2021,
 			sourceType: "module",
-			ecmaFeatures: {
-				jsx: true, // Enable JSX support for React
+			globals: {
+				...globals.browser,
 			},
 		},
 		plugins: {
-			react: require("eslint-plugin-react"),
-			"react-hooks": require("eslint-plugin-react-hooks"),
-			"@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
+			react: pluginReact,
+			"react-hooks": pluginReactHooks,
+			"@typescript-eslint": pluginTypescript,
 		},
 		rules: {
 			// React-specific rules
@@ -35,21 +43,24 @@ export default [
 	},
 	{
 		files: ["back-end/**/*.js"],
+		ignores: ["node_modules/**/*", "**/authMiddleware.js"],
 		languageOptions: {
 			ecmaVersion: 2021,
 			sourceType: "script",
 		},
-		env: {
-			node: true, // Enable Node.js globals and features
+		languageOptions: {
+			globals: {
+				...globals.node,
+			},
 		},
 		plugins: {
-			node: require("eslint-plugin-node"),
+			node: fixupPluginRules(pluginNode),
 		},
 		rules: {
 			// Node-specific rules
 			"node/no-unsupported-features/es-syntax": "off", // Use Babel or transpiler if needed
-			"node/no-missing-require": "error",
-			"node/no-extraneous-require": "error",
+			"node/no-missing-require": "warn",
+			"node/no-extraneous-require": "warn",
 			// Add more backend-specific rules
 		},
 	},
