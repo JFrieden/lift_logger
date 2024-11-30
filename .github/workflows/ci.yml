@@ -26,7 +26,7 @@ jobs:
               run: npm install && cd back-end && npm install && cd ../front-end && npm install
 
             - name: Lint Code
-              run: npx eslint . --ext .js,.jsx,.ts,.tsx
+              run: npx eslint . --ext .js,.jsx,.ts,.tsx --quiet
 
             - name: Cache Node.js modules
               uses: actions/cache@v3
