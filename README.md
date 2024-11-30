@@ -10,9 +10,9 @@ My TODO Items
     - [x] Create CRUD endpoints for lifts and workouts
     - [ ] Attach front-end UI components to endpoints
 
-- [ ] Set up CI/CD
+- [x] Set up CI/CD
     - [x] Create Heroku App
-    - [ ] Research
-    - [ ] Update Codebase for Heroku Hosting Compatibility
-    - [ ] Attach Deployment to Git
+    - [x] Research
+    - [x] Update Codebase for Heroku Hosting Compatibility
+    - [x] Attach Deployment to Git
 
