@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "../axios_instance";
-import getCssVariable from "../getCssVariable";
 import { FaCirclePlus } from "react-icons/fa6";
 
 const AddMovementForm = ({ liftId, onMovementAdded }) => {

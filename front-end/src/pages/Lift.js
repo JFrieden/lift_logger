@@ -39,7 +39,7 @@ const LiftPage = () => {
 		}
 	};
 
-	const handleMovementAdded = (movement) => {
+	const handleMovementAdded = () => {
 		setReloadDetails((prev) => !prev);
 	};
 
