@@ -76,7 +76,13 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 			handleSearch(formData.searchTerm);
 		} catch (error) {
 			console.error("Error creating new movement: ", error);
-			alert("Failure creating new exercise, please try again");
+			if (error.status === 409) {
+				alert(
+					`Error Creating ${formData.newMovementName}: ${error.response.data.error}`
+				);
+			} else {
+				alert("Failure Creating New Exercise: ", error.status);
+			}
 		}
 	};
 
