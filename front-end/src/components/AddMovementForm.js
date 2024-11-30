@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "../axios_instance";
 import { FaCirclePlus } from "react-icons/fa6";
 import { swalBasic } from "./SwalCardMixins";
-import getCssVariable from "../getCssVariable";
 
 const AddMovementForm = ({ liftId, onMovementAdded }) => {
 	// Grouping state into one object for better manageability
