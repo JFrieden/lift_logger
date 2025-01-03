@@ -3,7 +3,7 @@
 .lift-card {
 	background-color: var(--card-gray);
 	/* A mild contrast grey */
-	border-radius: 10px;
+	border-radius: var(--default-radius);
 	padding: 15px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -37,9 +37,7 @@
 	display: grid;
 	gap: 15px;
 	padding: 20px;
-	max-height: 50vh;
 	overflow-x: hidden;
-	overflow-y: scroll;
 	margin: 0px 0px 10px 0px;
 	background: #202326;
 	border-radius: 8px;

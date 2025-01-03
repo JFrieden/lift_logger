@@ -9,6 +9,8 @@
 
 	--background-gray: #1a1d21;
 	--card-gray: #2d3136;
+
+	--default-radius: 8px;
 }
 
 body {

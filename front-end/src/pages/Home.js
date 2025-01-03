@@ -40,22 +40,27 @@ const Home = () => {
 
 	return (
 		<div className="home-page">
-			<h1 style={{ padding: "15px" }}>Welcome Back, {user?.email}</h1>
-			<button
-				className="icon-left-button small-button icon-txt-wrapper"
-				style={{ marginLeft: "20px" }}
-				onClick={() => navigate("/create-lift")}
-			>
-				<FaCirclePlus
-					style={{
-						marginRight: "5px",
-						fontSize: "1.5em",
-					}}
-				/>
-				<h2>Create New Workout</h2>
-			</button>
+			<div className="home-page header">
+				<h1 style={{ padding: "15px", fontSize: "2rem" }}>
+					Welcome Back, {user?.email}
+				</h1>
+				<button
+					className="icon-left-button small-button icon-txt-wrapper"
+					style={{ marginLeft: "20px" }}
+					onClick={() => navigate("/create-lift")}
+				>
+					<FaCirclePlus
+						style={{
+							marginRight: "5px",
+							fontSize: "1.5em",
+						}}
+					/>
+					<h2>Create New Workout</h2>
+				</button>
+				<hr />
+			</div>
 			<div
-				className="lift-date"
+				className="text-danger"
 				style={{ marginTop: "15px", marginLeft: "20px" }}
 			>
 				Recent Lifts:
