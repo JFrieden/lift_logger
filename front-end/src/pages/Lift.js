@@ -74,25 +74,27 @@ const LiftPage = () => {
 		<div className="lift-details-page">
 			{lift ? (
 				<>
-					<div className="lift-header">
-						<div className="lift-header-container">
-							<div>
-								<h1>{lift.name}</h1>
-								<div className="lift-date">{lift.date}</div>
+					<div className="lift-details-page-header">
+						<div className="lift-header">
+							<div className="lift-header-container">
+								<div>
+									<h1>{lift.name}</h1>
+									<div className="lift-date">{lift.date}</div>
+								</div>
+								<button
+									onClick={deleteLift}
+									className="delete-lift-btn"
+								>
+									<FaTrash /> {/* Trashcan icon */}
+								</button>
 							</div>
-							<button
-								onClick={deleteLift}
-								className="delete-lift-btn"
-							>
-								<FaTrash /> {/* Trashcan icon */}
-							</button>
 						</div>
+						<hr></hr>
+						<AddMovementForm
+							liftId={liftId}
+							onMovementAdded={handleMovementAdded}
+						/>
 					</div>
-					<hr></hr>
-					<AddMovementForm
-						liftId={liftId}
-						onMovementAdded={handleMovementAdded}
-					/>
 					<LiftDetails
 						liftId={liftId}
 						reloadDetails={reloadDetails}

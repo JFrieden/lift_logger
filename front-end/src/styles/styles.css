@@ -147,3 +147,10 @@ button:hover {
 	justify-content: flex-start;
 	align-items: stretch;
 }
+
+.home-page .header {
+	position: sticky;
+	top: 0;
+	background-color: var(--background-gray);
+	z-index: 10;
+}

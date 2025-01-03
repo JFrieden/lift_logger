@@ -49,12 +49,11 @@ router.get("/lift_logs/:lift_id", authenticateToken, async (req, res) => {
 // UPDATE: Update a specific lift log entry by id
 router.put("/lift_logs/:id", authenticateToken, async (req, res) => {
 	const { id } = req.params;
-	const { set, rep, weight } = req.body;
+	const { sets, reps, weight, notes } = req.body;
 	const userId = req.user.id;
-
 	const { data, error } = await supabase
 		.from("lift_logs")
-		.update({ set, rep, weight })
+		.update({ sets, reps, weight, notes })
 		.eq("id", id);
 
 	if (error) return res.status(400).json({ error: error.message });
