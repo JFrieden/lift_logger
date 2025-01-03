@@ -172,6 +172,7 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 							<br></br>
 							<textarea
 								className="standard-input-box"
+								style={{ borderColor: "white" }}
 								value={currentLog.notes}
 								onChange={(e) =>
 									setCurrentLog({
