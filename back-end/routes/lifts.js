@@ -28,6 +28,8 @@ router.post("/", authenticateToken, async (req, res) => {
 router.get("/", authenticateToken, async (req, res) => {
 	const userId = req.user.id;
 	const { limit } = req.query; // Optional limit parameter
+	console.log("Somebody's trying to get lifts!");
+	console.log(userId);
 
 	let query = supabase.from("lifts").select("*").eq("user_id", userId);
 
@@ -38,6 +40,7 @@ router.get("/", authenticateToken, async (req, res) => {
 	}
 
 	const { data, error } = await query;
+	console.log(data);
 
 	if (error) return res.status(400).json({ error: error.message });
 	res.status(200).json(data);

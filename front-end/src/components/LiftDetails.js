@@ -67,7 +67,7 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 		setIsEditing(true);
 	};
 
-	const saveLog = async (logId) => {
+	const saveLog = async () => {
 		console.log("Saving updates for:", currentLog.id);
 		try {
 			await axios.put(`/lift_logs/${currentLog.id}`, currentLog);
