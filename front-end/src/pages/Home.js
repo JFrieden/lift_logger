@@ -41,9 +41,6 @@ const Home = () => {
 	return (
 		<div className="home-page">
 			<div className="home-page header">
-				<h1 style={{ padding: "15px", fontSize: "2rem" }}>
-					Welcome Back, {user?.email}
-				</h1>
 				<button
 					className="icon-left-button small-button icon-txt-wrapper"
 					style={{ marginLeft: "20px" }}
