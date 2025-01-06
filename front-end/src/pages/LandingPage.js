@@ -43,7 +43,7 @@ const LandingPage = () => {
 		script.defer = true;
 		script.onload = initializeGoogleSignIn;
 		document.body.appendChild(script);
-	}, []);
+	}, [handleGoogleLogin]);
 
 	const handleSignUp = () => navigate("/signup");
 	const handleLogin = () => navigate("/login");
