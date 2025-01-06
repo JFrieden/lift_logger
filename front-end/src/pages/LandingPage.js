@@ -7,14 +7,14 @@ const LandingPage = () => {
 	const { loginWithGoogle } = useAuth();
 	const navigate = useNavigate();
 
-	const handleGoogleLogin = async (response) => {
-		const login_success = await loginWithGoogle(response);
-		if (login_success) {
-			navigate("/home");
-		}
-	};
-
 	useEffect(() => {
+		const handleGoogleLogin = async (response) => {
+			const login_success = await loginWithGoogle(response);
+			if (login_success) {
+				navigate("/home");
+			}
+		};
+
 		const initializeGoogleSignIn = () => {
 			if (window.google) {
 				window.google.accounts.id.initialize({
@@ -43,7 +43,7 @@ const LandingPage = () => {
 		script.defer = true;
 		script.onload = initializeGoogleSignIn;
 		document.body.appendChild(script);
-	}, [handleGoogleLogin]);
+	});
 
 	const handleSignUp = () => navigate("/signup");
 	const handleLogin = () => navigate("/login");
