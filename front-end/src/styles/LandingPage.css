@@ -90,3 +90,19 @@ body {
 		font-size: 1.5em;
 	}
 }
+
+/* Custom styling for the Google Sign-In button */
+.google-signin-button div {
+	background-color: var(--card-gray);
+	color: white !important;
+	border: none !important;
+	border-radius: 30px !important;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.3s !important; /* Add transition for smooth hover effect */
+}
+
+.google-signin-button div:hover {
+	background-color: var(--card-gray-hover) !important;
+}

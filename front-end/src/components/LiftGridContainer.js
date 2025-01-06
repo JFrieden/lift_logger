@@ -12,7 +12,11 @@ const LiftGridContainer = ({
 			{items.length === 0 && ifEmptyMessage}
 			<div className={"card-grid " + gridClassNames}>
 				{items.map((item) => (
-					<LiftCard lift={item} onClick={() => onSelectCard(item)} />
+					<LiftCard
+						lift={item}
+						onClick={() => onSelectCard(item)}
+						key={item.id}
+					/>
 				))}
 			</div>
 		</>
