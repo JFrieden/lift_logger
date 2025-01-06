@@ -41,9 +41,15 @@ const Home = () => {
 	return (
 		<div className="home-page">
 			<div className="home-page header">
+				<h2>
+					Welcome Back
+					{user.user_metadata.name
+						? ", " + user.user_metadata.name.split(" ")[0]
+						: ""}
+				</h2>
+
 				<button
 					className="icon-left-button small-button icon-txt-wrapper"
-					style={{ marginLeft: "20px" }}
 					onClick={() => navigate("/create-lift")}
 				>
 					<FaCirclePlus

@@ -31,8 +31,10 @@ export const AuthProvider = ({ children }) => {
 			});
 			setUser(response.data.user);
 			localStorage.setItem("token", response.data.token); // Assuming signup returns a token
+			return true;
 		} catch (error) {
 			console.error("Signup Error", error.message);
+			return false;
 		}
 	};
 

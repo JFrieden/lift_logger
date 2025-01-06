@@ -103,7 +103,10 @@ body {
 	transition: background-color 0.3s !important; 
 }
 
+.google-signin-button div:hover {
+	background-color: var(--card-gray-hover) !important;
+}
+
 .google-signin-button div span {
 	color: white !important;
 } */
-
