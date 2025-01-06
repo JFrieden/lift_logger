@@ -4,9 +4,14 @@ import { useNavigate } from "react-router-dom";
 
 const CreateLift = () => {
 	const [name, setName] = useState("");
-	const [date, setDate] = useState(new Date().toLocaleDateString()); // Default to today
-	const navigate = useNavigate();
+	const formatDate = (date) => {
+		const offset = date.getTimezoneOffset();
+		const localDate = new Date(date.getTime() - offset * 60 * 1000);
+		return localDate.toISOString().split("T")[0];
+	};
 
+	const [date, setDate] = useState(formatDate(new Date()));
+	const navigate = useNavigate();
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
@@ -26,8 +31,10 @@ const CreateLift = () => {
 
 	return (
 		<div className="create-lift">
-			<h2>Create a New Lift</h2>
-			<form onSubmit={handleSubmit}>
+			<h2 style={{ marginBottom: "5px" }}>Create a New Lift</h2>
+			<h4>Use a Previous Lift</h4>
+			<hr></hr>
+			<form onSubmit={handleSubmit} style={{ marginTop: "10px" }}>
 				<label>
 					Lift Name:
 					<input
