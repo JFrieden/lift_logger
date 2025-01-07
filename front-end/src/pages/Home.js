@@ -47,6 +47,7 @@ const Home = () => {
 						? ", " + user.user_metadata.name.split(" ")[0]
 						: ""}
 				</h2>
+
 				<button
 					className="icon-left-button small-button icon-txt-wrapper"
 					onClick={() => navigate("/create-lift")}
