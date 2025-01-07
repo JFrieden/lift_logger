@@ -29,6 +29,8 @@ export const AuthProvider = ({ children }) => {
 				email,
 				password,
 			});
+			setUser(response.data.user);
+			localStorage.setItem("token", response.data.token);
 			return response;
 		} catch (error) {
 			console.error("Signup Error", error.response);
