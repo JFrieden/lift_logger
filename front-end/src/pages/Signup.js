@@ -61,6 +61,7 @@ const Signup = () => {
 					}}
 				>
 					{signupMessage}
+
 				</p>
 			)}
 			<p className="mt-4" style={{ marginTop: "15px" }}>

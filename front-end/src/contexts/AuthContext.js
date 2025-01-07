@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }) => {
 		} catch (error) {
 			console.error("Signup Error", error.response);
 			return error.response;
+
 		}
 	};
 
