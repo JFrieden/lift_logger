@@ -11,9 +11,7 @@ router.post("/signup", async (req, res) => {
 		password,
 	});
 	if (error) return res.status(400).json({ error: error.message });
-	console.log(data);
 	if (!data.user || data.user.role === "") {
-		console.log("The check you used for duplicate emails worked!");
 		return res.status(400).json({
 			error: "Failed to create account. Please try again with different email or password, or try again later.",
 		});
