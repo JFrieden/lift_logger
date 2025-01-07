@@ -5,19 +5,26 @@ import "../styles/LandingPage.css";
 
 const Signup = () => {
 	const { signUp } = useAuth();
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [signupStatus, setSignupStatus] = useState("");
+	const [signupMessage, setSignupMessage] = useState("");
+	const [signupSuccess, setSignupSuccess] = useState(false);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const success = await signUp(email, password);
-		if (success) {
-			navigate("/home");
-		} else {
-			setSignupStatus(
-				"There was an error creating your account. Please use a different email or password, or try again later."
+		try {
+			const response = await signUp(email, password);
+			console.log(response);
+			if (response.data.user) {
+				setSignupSuccess(true);
+				setSignupMessage(response.data.message);
+			} else {
+				setSignupMessage(response.data.error);
+			}
+		} catch (error) {
+			setSignupMessage(
+				error.message || "Error signing up. Please try again."
 			);
 		}
 	};
@@ -45,9 +52,16 @@ const Signup = () => {
 					</button>
 				</div>
 			</form>
-			{setSignupStatus && (
-				<p style={{ color: "var(--default-red)", fontSize: "12px" }}>
-					{signupStatus}
+			{setSignupMessage && (
+				<p
+					style={{
+						color: signupSuccess
+							? "var(--default-green)"
+							: "var(--default-red)",
+						fontSize: "12px",
+					}}
+				>
+					{signupMessage}
 				</p>
 			)}
 			<p className="mt-4" style={{ marginTop: "15px" }}>

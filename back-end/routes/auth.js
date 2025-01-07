@@ -6,15 +6,22 @@ const router = express.Router();
 // Signup Endpoint
 router.post("/signup", async (req, res) => {
 	const { email, password } = req.body;
-
 	const { data, error } = await supabase.auth.signUp({
 		email,
 		password,
 	});
-
 	if (error) return res.status(400).json({ error: error.message });
-	res.status(201).json({
-		message: "User signed up successfully!",
+	console.log(data);
+	if (!data.user || data.user.role === "") {
+		console.log("The check you used for duplicate emails worked!");
+		return res.status(400).json({
+			error: "Failed to create account. Please try again with different email or password, or try again later.",
+		});
+	}
+
+	return res.status(201).json({
+		message:
+			"User signed up successfully! Please confirm your email to complete the registration and then log in!",
 		user: data.user,
 	});
 });
@@ -69,7 +76,6 @@ router.get("/me", async (req, res) => {
 });
 
 router.post("/googleAuth", async (req, res) => {
-	console.log("Somebody's using sign in with google!");
 	const token = req.body.token;
 	const { data, error } = await supabase.auth.signInWithIdToken({
 		provider: "google",
