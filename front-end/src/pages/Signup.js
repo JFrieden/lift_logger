@@ -15,7 +15,6 @@ const Signup = () => {
 		e.preventDefault();
 		try {
 			const response = await signUp(email, password);
-			console.log(response);
 			if (response.data.user) {
 				setSignupSuccess(true);
 				setSignupMessage(response.data.message);
