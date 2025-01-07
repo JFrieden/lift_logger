@@ -29,12 +29,11 @@ export const AuthProvider = ({ children }) => {
 				email,
 				password,
 			});
-			setUser(response.data.user);
-			localStorage.setItem("token", response.data.token); // Assuming signup returns a token
-			return true;
+			return response;
 		} catch (error) {
-			console.error("Signup Error", error.message);
-			return false;
+			console.error("Signup Error", error.response);
+			return error.response;
+
 		}
 	};
 
