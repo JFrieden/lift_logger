@@ -89,6 +89,8 @@
 
 .exercise-list {
 	padding-bottom: min(2.5rem, 7.5%);
+	overflow-y: scroll;
+	height: auto;
 }
 
 .modal {

@@ -3,6 +3,7 @@ import axios from "../axios_instance";
 import { useNavigate } from "react-router-dom";
 
 const CreateLift = () => {
+	const [usePreviousLift, setUsePreviousLift] = useState(false);
 	const [name, setName] = useState("");
 	const formatDate = (date) => {
 		const offset = date.getTimezoneOffset();
