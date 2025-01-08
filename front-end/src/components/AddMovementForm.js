@@ -191,7 +191,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 			)}
 
 			<div>
-				<ul>
+				<ul style={{ padding: "0" }}>
 					{formData.movements.map((movement) => (
 						<li
 							className="lift-card"
