@@ -28,13 +28,19 @@ router.post("/", authenticateToken, async (req, res) => {
 router.get("/", authenticateToken, async (req, res) => {
 	const userId = req.user.id;
 	const { limit } = req.query; // Optional limit parameter
+	const { search } = req.query;
 
-	let query = supabase.from("lifts").select("*").eq("user_id", userId);
+	let query = supabase
+		.from("lifts")
+		.select("*")
+		.eq("user_id", userId)
+		.order("date", { ascending: false });
 
+	if (search) {
+		query = query.ilike("name", `%${search}%`);
+	}
 	if (limit) {
-		query = query
-			.order("date", { ascending: false })
-			.limit(parseInt(limit, 10));
+		query = query.limit(parseInt(limit, 10));
 	}
 
 	const { data, error } = await query;

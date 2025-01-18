@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "../axios_instance";
 import { FaCirclePlus } from "react-icons/fa6";
 import { swalBasic } from "./SwalCardMixins";
+import { debounce } from "lodash";
 
 const AddMovementForm = ({ liftId, onMovementAdded }) => {
 	// Grouping state into one object for better manageability
@@ -87,9 +88,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		}
 	};
 
-	// Handle movement search
-	const handleSearch = async (term) => {
-		setFormData((prevState) => ({ ...prevState, searchTerm: term }));
+	const handleSearch = debounce(async (term) => {
 		if (term.length > 2) {
 			const response = await axios.get("/movements", {
 				params: { search: term },
@@ -98,7 +97,22 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 				...prevState,
 				movements: response.data,
 			}));
+		} else if (term.length === 0) {
+			setFormData((prevState) => ({
+				...prevState,
+				movements: [],
+			}));
 		}
+	}, 300);
+
+	// Immediately update the searchTerm on every keystroke
+	const handleSearchChange = (e) => {
+		const term = e.target.value;
+		setFormData((prevState) => ({
+			...prevState,
+			searchTerm: term,
+		}));
+		handleSearch(term); // This will debounce the actual API call
 	};
 
 	// Handle selecting a movement from search results
@@ -171,22 +185,23 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		<div>
 			{!formData.addingMovement && (
 				<button
-					className="icon-left-button blue-button small-button icon-txt-wrapper"
+					className="icon-left-button blue-button small-button icon-txt-wrapper inline-flex items-center"
 					onClick={changeAddingMovement}
 				>
 					<FaCirclePlus
+						className="self-center"
 						style={{ marginRight: "5px", fontSize: "1.5em" }}
 					/>
-					<h2>Add an Exercise </h2>
+					<h2 className="m-0 leading-tight">Add an Exercise </h2>
 				</button>
 			)}
 			{formData.addingMovement && !formData.creatingMovement && (
 				<input
-					className="standard-input-box"
+					className="default-input-box"
 					type="text"
 					value={formData.searchTerm}
-					onChange={(e) => handleSearch(e.target.value)}
-					placeholder="Search Existing Exercises..."
+					onChange={handleSearchChange}
+					placeholder="🔎︎ Search Existing Exercises..."
 				/>
 			)}
 
@@ -205,44 +220,11 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 				</ul>
 			</div>
 
-			{formData.addingMovement &&
-				!formData.creatingMovement &&
-				!formData.selectedMovement && (
-					<button
-						onClick={() => {
-							resetFormData();
-							setFormData((prevState) => ({
-								...prevState,
-								addingMovement: true,
-								creatingMovement: true,
-							}));
-						}}
-						className="blue-button span-button"
-					>
-						Create New Exercise
-					</button>
-				)}
-			{formData.creatingMovement && (
-				<div>
-					<input
-						className="standard-input-box"
-						type="text"
-						value={formData.newMovementName}
-						placeholder="Enter New Exercise Name"
-						onChange={(e) =>
-							handleNewExerciseNameChange(e.target.value)
-						}
-					/>
-					<button onClick={handleSubmitNewExercise}>
-						Save Exercise
-					</button>
-				</div>
-			)}
 			{formData.selectedMovement && (
 				<div className="movement-form">
 					<h3>{formData.selectedMovement.name}</h3>
 					<input
-						className="standard-input-box"
+						className="default-input-box"
 						type="number"
 						value={formData.sets}
 						onChange={(e) =>
@@ -259,7 +241,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 						</p>
 					)}
 					<input
-						className="standard-input-box"
+						className="default-input-box"
 						type="number"
 						value={formData.reps}
 						onChange={(e) =>
@@ -276,7 +258,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 						</p>
 					)}
 					<input
-						className="standard-input-box"
+						className="default-input-box"
 						type="number"
 						value={formData.weight}
 						onChange={(e) =>
@@ -293,7 +275,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 						</p>
 					)}
 					<input
-						className="standard-input-box"
+						className="default-input-box"
 						type="text"
 						value={formData.notes}
 						onChange={(e) =>
@@ -304,20 +286,62 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 						}
 						placeholder="Notes"
 					/>
-					<button onClick={handleSubmitLog}>Add Exercise</button>
 				</div>
 			)}
-			{formData.addingMovement && (
-				<button
-					onClick={changeAddingMovement}
-					className="delete-button"
-				>
-					Cancel
-				</button>
+
+			{formData.creatingMovement && (
+				<div>
+					<input
+						className="default-input-box"
+						type="text"
+						value={formData.newMovementName}
+						placeholder="Enter New Exercise Name"
+						onChange={(e) =>
+							handleNewExerciseNameChange(e.target.value)
+						}
+					/>
+				</div>
 			)}
+
+			{/* Contains the buttons for all adding exercise options. 
+            Only Cancel and one other button shoud be visible at a time */}
+			<div className="flex flex-col items-center">
+				{formData.addingMovement &&
+					!formData.creatingMovement &&
+					!formData.selectedMovement && (
+						<button
+							onClick={() => {
+								resetFormData();
+								setFormData((prevState) => ({
+									...prevState,
+									addingMovement: true,
+									creatingMovement: true,
+								}));
+							}}
+							className="blue-button span-button"
+						>
+							Create New Exercise
+						</button>
+					)}
+				{formData.creatingMovement && (
+					<button onClick={handleSubmitNewExercise}>
+						Save Exercise
+					</button>
+				)}
+				{formData.selectedMovement && (
+					<button onClick={handleSubmitLog}>Add Exercise</button>
+				)}
+				{formData.addingMovement && (
+					<button
+						onClick={changeAddingMovement}
+						className="delete-button"
+					>
+						Cancel
+					</button>
+				)}
+			</div>
 			{formData.movements.length > 0 && <hr></hr>}
 		</div>
 	);
 };
-
 export default AddMovementForm;

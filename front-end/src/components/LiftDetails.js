@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "../axios_instance";
 
+import Spinner from "./Spinner";
 import { swalConfirmCancel, swalBasic } from "./SwalCardMixins";
 import { FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import "../styles/Lift.css";
 
 const LiftDetails = ({ liftId, reloadDetails }) => {
-	const [logs, setLogs] = useState([]);
+	const [logs, setLogs] = useState(null);
 	const [currentLog, setCurrentLog] = useState(null);
 	const [isEditing, setIsEditing] = useState(false);
 
@@ -68,7 +69,6 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 	};
 
 	const saveLog = async () => {
-		console.log("Saving updates for:", currentLog.id);
 		try {
 			await axios.put(`/lift_logs/${currentLog.id}`, currentLog);
 			setLogs((prevLogs) =>
@@ -90,35 +90,39 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 
 	return (
 		<>
-			<div className="exercise-list">
-				{logs.map((log) => (
-					<div key={log.id} className="lift-card log-entry">
-						<div className="log-entry-container">
-							<div>
-								<h2>{log.movement_name}</h2>
-								<p>Sets: {log.sets}</p>
-								<p>Reps: {log.reps}</p>
-								<p>Weight: {log.weight}</p>
-								<p>Notes: {log.notes}</p>
-							</div>
-							<div className="button-container">
-								<button
-									className="blue-button edit-button"
-									onClick={() => editLog(log.id)}
-								>
-									<FaEdit />
-								</button>
-								<button
-									className="delete-button delete-movement-button"
-									onClick={() => deleteLog(log.id)}
-								>
-									<FaTrash />
-								</button>
+			{logs ? (
+				<div className="exercise-list">
+					{logs.map((log) => (
+						<div key={log.id} className="lift-card log-entry">
+							<div className="log-entry-container">
+								<div>
+									<h2>{log.movement_name}</h2>
+									<p>Sets: {log.sets}</p>
+									<p>Reps: {log.reps}</p>
+									<p>Weight: {log.weight}</p>
+									<p>Notes: {log.notes}</p>
+								</div>
+								<div className="button-container">
+									<button
+										className="blue-button edit-button"
+										onClick={() => editLog(log.id)}
+									>
+										<FaEdit />
+									</button>
+									<button
+										className="delete-button delete-movement-button"
+										onClick={() => deleteLog(log.id)}
+									>
+										<FaTrash />
+									</button>
+								</div>
 							</div>
 						</div>
-					</div>
-				))}
-			</div>
+					))}
+				</div>
+			) : (
+				<Spinner />
+			)}
 
 			{/* Edit Dialog */}
 			{isEditing && (
@@ -128,7 +132,7 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 						<label>
 							Sets:
 							<input
-								className="standard-input-box"
+								className="default-input-box"
 								type="number"
 								value={currentLog.sets}
 								onChange={(e) =>
@@ -142,7 +146,7 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 						<label>
 							Reps:
 							<input
-								className="standard-input-box"
+								className="default-input-box"
 								type="number"
 								value={currentLog.reps}
 								onChange={(e) =>
@@ -156,7 +160,7 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 						<label>
 							Weight:
 							<input
-								className="standard-input-box"
+								className="default-input-box"
 								type="number"
 								value={currentLog.weight}
 								onChange={(e) =>
@@ -171,7 +175,13 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 							Notes:
 							<br></br>
 							<textarea
-								className="standard-input-box"
+								style={{
+									width: "100%",
+									borderColor: "white",
+									border: "1px solid white",
+									borderRadius: "4px",
+								}}
+								className="default-input-box"
 								value={currentLog.notes}
 								onChange={(e) =>
 									setCurrentLog({
@@ -182,13 +192,13 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 							/>
 						</label>
 						<div className="modal-buttons">
+							<button onClick={saveLog}>Save</button>
 							<button
 								className="delete-button"
 								onClick={() => setIsEditing(false)}
 							>
 								Cancel
 							</button>
-							<button onClick={saveLog}>Save</button>
 						</div>
 					</div>
 				</div>

@@ -33,13 +33,13 @@ const Signup = () => {
 			<h2 className="text-2xl font-bold mb-4">Sign Up</h2>
 			<form onSubmit={handleSubmit}>
 				<input
-					className="standard-input-box"
+					className="default-input-box"
 					type="email"
 					placeholder="Email"
 					onChange={(e) => setEmail(e.target.value)}
 				/>
 				<input
-					className="standard-input-box"
+					className="default-input-box"
 					type="password"
 					placeholder="Password"
 					onChange={(e) => setPassword(e.target.value)}
@@ -61,7 +61,6 @@ const Signup = () => {
 					}}
 				>
 					{signupMessage}
-
 				</p>
 			)}
 			<p className="mt-4" style={{ marginTop: "15px" }}>
