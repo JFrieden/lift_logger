@@ -4,7 +4,6 @@ import "./styles/index.css";
 import App from "./App";
 import "./styles/styles.css";
 
-// console.log("Talking to backend: " + process.env.BACKEND_URL);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
 

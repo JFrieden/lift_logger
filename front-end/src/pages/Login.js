@@ -29,7 +29,7 @@ const Login = () => {
 					placeholder="Email"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
-					className="mb-4 w-full px-3 py-2 border rounded-md standard-input-box"
+					className="mb-4 w-full px-3 py-2 border rounded-md default-input-box"
 					required
 				/>
 				<input
@@ -37,7 +37,7 @@ const Login = () => {
 					placeholder="Password"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
-					className="mb-4 w-full px-3 py-2 border rounded-md standard-input-box"
+					className="mb-4 w-full px-3 py-2 border rounded-md default-input-box"
 					required
 				/>
 				<div

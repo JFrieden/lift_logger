@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }) => {
 		} catch (error) {
 			console.error("Signup Error", error.response);
 			return error.response;
-
 		}
 	};
 
@@ -43,7 +42,6 @@ export const AuthProvider = ({ children }) => {
 				email,
 				password,
 			});
-			console.log("Setting new token!");
 			localStorage.setItem("token", response.data.token);
 			setUser(response.data.user);
 			setLoginMessage("Login Success!");

@@ -39,7 +39,7 @@
 	padding: 20px;
 	overflow-x: hidden;
 	margin: 0px 0px 10px 0px;
-	background: #202326;
+	background: var(--dark-gray);
 	border-radius: 8px;
 }
 
