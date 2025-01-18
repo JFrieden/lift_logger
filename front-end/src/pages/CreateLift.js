@@ -27,18 +27,9 @@ const CreateLift = () => {
 		return localDate.toISOString().split("T")[0];
 	};
 
-	const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 	useEffect(() => {
 		setDate(formatDate(new Date()));
 	}, []);
-
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		try {
-			navigate("/home");
-		} catch (error) {}
-	};
 
 	const handleSearch = debounce(async (term) => {
 		// Query for lifts to use as template for new lift
@@ -91,16 +82,14 @@ const CreateLift = () => {
 			await new Promise((resolve) => {
 				swalBasic
 					.fire({
-						title: `${name} Created!`,
+						title: `${name}\nCreated!`,
 						icon: "success",
 						showConfirmButton: false,
-						timer: 1500,
+						timer: 750,
 					})
 					.then(resolve); // Resolve once the modal closes
 			});
-			setTimeout(() => {
-				navigate("/home");
-			}, 10000);
+			navigate("/home");
 		} catch (error) {
 			console.error("Error creating lift:", error);
 		}
@@ -117,7 +106,12 @@ const CreateLift = () => {
 				<h4>This will copy the exercises from your previous lift</h4>
 			)}
 			<hr></hr>
-			<form onSubmit={handleSubmit} className="mt-2">
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+				}}
+				className="mt-2"
+			>
 				<label>
 					{type === "previous" ? (
 						prevLift ? (
