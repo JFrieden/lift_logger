@@ -163,6 +163,7 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 				onSave={saveLog}
 			/>
 		</div>
+
 	);
 };
 

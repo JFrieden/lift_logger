@@ -9,6 +9,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 		sets: "",
 		reps: [NaN],
 		weight: [NaN],
+
 		notes: "",
 		setsError: false,
 		repsErrorIdxs: [],
@@ -32,6 +33,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 				sets: initialData?.sets || 1,
 				reps: initialData?.reps || [NaN],
 				weight: initialData?.weight || [NaN],
+
 				notes: initialData?.notes || "",
 				setsError: false,
 				repsErrorIdxs: [],
@@ -63,12 +65,14 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 			updatedReps = log.reps,
 			updatedWeights = log.weight,
 			nullCheck = false,
+
 		} = {
 			field: "all",
 			updatedSets: log.sets,
 			updatedReps: log.reps,
 			updatedWeights: log.weight,
 			nullCheck: true,
+
 		}
 	) => {
 		let valid = true;
@@ -91,6 +95,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 					weightErrorIdxs: prevLog.weightErrorIdxs.filter(
 						(item) => item < prevLog.sets
 					),
+
 				}));
 			}
 		}
@@ -106,6 +111,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 					setLog((prevLog) => ({
 						...prevLog,
 						repsErrorIdxs: [...prevLog.repsErrorIdxs, index],
+
 					}));
 					valid = false;
 				} else {
@@ -113,6 +119,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 						...prevLog,
 						repsErrorIdxs: prevLog.repsErrorIdxs.filter(
 							(item) => item !== index && item < prevLog.sets
+
 						),
 					}));
 				}
@@ -129,6 +136,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 					setLog((prevLog) => ({
 						...prevLog,
 						weightErrorIdxs: [...prevLog.weightErrorIdxs, index],
+
 					}));
 					valid = false;
 				} else {
@@ -136,6 +144,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 						...prevLog,
 						weightErrorIdxs: prevLog.weightErrorIdxs.filter(
 							(item) => item !== index && item < prevLog.sets
+
 						),
 					}));
 				}
@@ -182,6 +191,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 		return <></>;
 	}
 	document.body.classList.add("modal-open");
+
 
 	return (
 		<div className="modal">
@@ -244,6 +254,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 											validateInputs({
 												field: "reps",
 												updatedReps: newReps,
+
 											});
 										}
 									}}
