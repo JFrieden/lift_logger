@@ -3,6 +3,7 @@ import axios from "../axios_instance";
 import { FaCirclePlus } from "react-icons/fa6";
 import { swalBasic } from "./SwalCardMixins";
 import { debounce } from "lodash";
+import ExerciseModal from "./ExerciseModal";
 
 const AddMovementForm = ({ liftId, onMovementAdded }) => {
 	// Grouping state into one object for better manageability
@@ -12,13 +13,6 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		searchTerm: "",
 		movements: [],
 		selectedMovement: null,
-		sets: "",
-		reps: "",
-		weight: "",
-		notes: "",
-		setsError: "",
-		repsError: "",
-		weightError: "",
 	});
 
 	// Reset all form data to initial state
@@ -26,17 +20,9 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		setFormData({
 			addingMovement: false,
 			creatingMovement: false,
-			newMovementName: "",
 			searchTerm: "",
 			movements: [],
 			selectedMovement: null,
-			sets: "",
-			reps: "",
-			weight: "",
-			notes: "",
-			setsError: "",
-			repsError: "",
-			weightError: "",
 		});
 	};
 	// Handle adding a movement (show movement form workflow)
@@ -117,6 +103,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 
 	// Handle selecting a movement from search results
 	const selectMovement = (movement) => {
+		console.log(movement);
 		setFormData((prevState) => ({
 			...prevState,
 			selectedMovement: movement,
@@ -124,55 +111,17 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		}));
 	};
 
-	// Validation for positive num types
-	const isValidInteger = (value) =>
-		parseInt(value) - parseFloat(value) === 0 && parseInt(value) > 0;
-	const isValidFloat = (value) => !isNaN(value) && parseFloat(value) > 0;
-
-	const validateInputs = () => {
-		let valid = true;
-		const newErrors = {
-			setsError: "",
-			repsError: "",
-			weightError: "",
-		};
-
-		if (!isValidInteger(formData.sets)) {
-			newErrors.setsError = "Sets must be a positive whole number.";
-			valid = false;
-		}
-
-		if (!isValidInteger(formData.reps)) {
-			newErrors.repsError = "Reps must be a positive whole number.";
-			valid = false;
-		}
-
-		if (!isValidFloat(formData.weight)) {
-			newErrors.weightError = "Weight must be a positive number.";
-			valid = false;
-		}
-
-		setFormData((prevState) => ({
-			...prevState,
-			...newErrors,
-		}));
-
-		return valid;
-	};
-
 	// Handle form submission
-	const handleSubmitLog = async (e) => {
-		e.preventDefault();
-
-		if (formData.selectedMovement && validateInputs()) {
+	const handleSubmitLog = async (log) => {
+		if (formData.selectedMovement) {
 			const newLiftLog = {
-				movement_id: formData.selectedMovement.id,
-				movement_name: formData.selectedMovement.name,
+				movement_id: log.movement_id,
+				movement_name: log.movement_name,
 				lift_id: liftId,
-				sets: parseInt(formData.sets),
-				reps: parseInt(formData.reps),
-				weight: parseFloat(formData.weight),
-				notes: formData.notes,
+				sets: parseInt(log.sets),
+				reps: log.reps,
+				weight: log.weight,
+				notes: log.notes,
 			};
 
 			const response = await axios.post("/lift_logs", newLiftLog);
@@ -220,74 +169,16 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 				</ul>
 			</div>
 
-			{formData.selectedMovement && (
-				<div className="movement-form">
-					<h3>{formData.selectedMovement.name}</h3>
-					<input
-						className="default-input-box"
-						type="number"
-						value={formData.sets}
-						onChange={(e) =>
-							setFormData((prevState) => ({
-								...prevState,
-								sets: e.target.value,
-							}))
-						}
-						placeholder="Sets"
-					/>
-					{formData.setsError && (
-						<p style={{ color: "red", fontSize: "0.8em" }}>
-							{formData.setsError}
-						</p>
-					)}
-					<input
-						className="default-input-box"
-						type="number"
-						value={formData.reps}
-						onChange={(e) =>
-							setFormData((prevState) => ({
-								...prevState,
-								reps: e.target.value,
-							}))
-						}
-						placeholder="Reps"
-					/>
-					{formData.repsError && (
-						<p style={{ color: "red", fontSize: "0.8em" }}>
-							{formData.repsError}
-						</p>
-					)}
-					<input
-						className="default-input-box"
-						type="number"
-						value={formData.weight}
-						onChange={(e) =>
-							setFormData((prevState) => ({
-								...prevState,
-								weight: e.target.value,
-							}))
-						}
-						placeholder="Weight"
-					/>
-					{formData.weightError && (
-						<p style={{ color: "red", fontSize: "0.8em" }}>
-							{formData.weightError}
-						</p>
-					)}
-					<input
-						className="default-input-box"
-						type="text"
-						value={formData.notes}
-						onChange={(e) =>
-							setFormData((prevState) => ({
-								...prevState,
-								notes: e.target.value,
-							}))
-						}
-						placeholder="Notes"
-					/>
-				</div>
-			)}
+			<ExerciseModal
+				isOpen={formData.selectedMovement}
+				onClose={() => resetFormData()}
+				onSave={(log) => handleSubmitLog(log)}
+				initialData={{
+					movement_id: formData.selectedMovement?.id || "",
+					movement_name: formData.selectedMovement?.name || "",
+					sets: 1,
+				}}
+			/>
 
 			{formData.creatingMovement && (
 				<div>
@@ -327,9 +218,6 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 					<button onClick={handleSubmitNewExercise}>
 						Save Exercise
 					</button>
-				)}
-				{formData.selectedMovement && (
-					<button onClick={handleSubmitLog}>Add Exercise</button>
 				)}
 				{formData.addingMovement && (
 					<button

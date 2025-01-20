@@ -7,6 +7,7 @@ import { swalConfirmCancel, swalBasic } from "./SwalCardMixins";
 import { FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import "../styles/Lift.css";
+import ExerciseModal from "./ExerciseModal";
 
 const LiftDetails = ({ liftId, reloadDetails }) => {
 	const [logs, setLogs] = useState(null);
@@ -68,12 +69,12 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 		setIsEditing(true);
 	};
 
-	const saveLog = async () => {
+	const saveLog = async (changedLog) => {
 		try {
-			await axios.put(`/lift_logs/${currentLog.id}`, currentLog);
+			await axios.put(`/lift_logs/${changedLog.id}`, changedLog);
 			setLogs((prevLogs) =>
 				prevLogs.map((log) =>
-					log.id === currentLog.id ? currentLog : log
+					log.id === changedLog.id ? changedLog : log
 				)
 			);
 			setIsEditing(false);
@@ -85,6 +86,11 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 			});
 		} catch (error) {
 			console.error("Error updating log: ", error);
+			swalBasic.fire({
+				title: `Failed To Update!\n${error.message}`,
+				icon: "error",
+			});
+			setIsEditing(false);
 		}
 	};
 
@@ -97,10 +103,34 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 							<div className="log-entry-container">
 								<div>
 									<h2>{log.movement_name}</h2>
-									<p>Sets: {log.sets}</p>
-									<p>Reps: {log.reps}</p>
-									<p>Weight: {log.weight}</p>
-									<p>Notes: {log.notes}</p>
+									<p>
+										<span className="font-bold">Sets:</span>{" "}
+										{log.sets}
+									</p>
+									<div className="mb-2">
+										<span className="font-bold">
+											Reps x Weight:
+										</span>
+										<div style={{ textIndent: "1rem" }}>
+											{log.reps.map((rep, index) => (
+												<span
+													key={index}
+													className="reps-weight"
+												>
+													{rep}x{log.weight[index]}
+													{index < log.reps.length - 1
+														? ", "
+														: ""}
+												</span>
+											))}
+										</div>
+									</div>
+									<div>
+										<span className="font-bold">
+											Notes:
+										</span>{" "}
+										{log.notes}
+									</div>
 								</div>
 								<div className="button-container">
 									<button
@@ -124,85 +154,12 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 				<Spinner />
 			)}
 
-			{/* Edit Dialog */}
-			{isEditing && (
-				<div className="modal">
-					<div className="modal-content">
-						<h2>{currentLog.movement_name}</h2>
-						<label>
-							Sets:
-							<input
-								className="default-input-box"
-								type="number"
-								value={currentLog.sets}
-								onChange={(e) =>
-									setCurrentLog({
-										...currentLog,
-										sets: e.target.value,
-									})
-								}
-							/>
-						</label>
-						<label>
-							Reps:
-							<input
-								className="default-input-box"
-								type="number"
-								value={currentLog.reps}
-								onChange={(e) =>
-									setCurrentLog({
-										...currentLog,
-										reps: e.target.value,
-									})
-								}
-							/>
-						</label>
-						<label>
-							Weight:
-							<input
-								className="default-input-box"
-								type="number"
-								value={currentLog.weight}
-								onChange={(e) =>
-									setCurrentLog({
-										...currentLog,
-										weight: e.target.value,
-									})
-								}
-							/>
-						</label>
-						<label>
-							Notes:
-							<br></br>
-							<textarea
-								style={{
-									width: "100%",
-									borderColor: "white",
-									border: "1px solid white",
-									borderRadius: "4px",
-								}}
-								className="default-input-box"
-								value={currentLog.notes}
-								onChange={(e) =>
-									setCurrentLog({
-										...currentLog,
-										notes: e.target.value,
-									})
-								}
-							/>
-						</label>
-						<div className="modal-buttons">
-							<button onClick={saveLog}>Save</button>
-							<button
-								className="delete-button"
-								onClick={() => setIsEditing(false)}
-							>
-								Cancel
-							</button>
-						</div>
-					</div>
-				</div>
-			)}
+			<ExerciseModal
+				isOpen={isEditing}
+				initialData={currentLog}
+				onClose={() => setIsEditing(false)}
+				onSave={saveLog}
+			/>
 		</>
 	);
 };

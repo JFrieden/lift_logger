@@ -92,3 +92,21 @@
 	overflow-y: scroll;
 	height: auto;
 }
+/* 
+.reps-weight {
+	display: flex;
+	align-items: flex-start;
+}
+
+.reps-weight::before {
+	flex-shrink: 0;
+}
+
+.reps-weight span {
+	white-space: nowrap;
+}
+
+.reps-weight span:not(:first-child) {
+	margin-left: 0.5em; 
+}
+*/
