@@ -126,6 +126,12 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 
 			const response = await axios.post("/lift_logs", newLiftLog);
 			onMovementAdded(response.data.lift_log);
+			swalBasic.fire({
+				title: "Exercise Added!",
+				icon: "success",
+				timer: 750,
+				showConfirmButton: false,
+			});
 			resetFormData();
 		}
 	};
