@@ -181,7 +181,6 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 				initialData={{
 					movement_id: formData.selectedMovement?.id || "",
 					movement_name: formData.selectedMovement?.name || "",
-					sets: 1,
 				}}
 			/>
 

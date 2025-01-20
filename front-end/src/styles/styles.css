@@ -18,6 +18,7 @@
 	box-sizing: border-box;
 }
 
+html,
 body {
 	margin: 0;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
@@ -176,4 +177,10 @@ button:hover {
 	max-width: 500px; /* Limit width on desktop */
 	max-height: 90%; /* Prevent excessive height */
 	overflow-y: auto; /* Enable scrolling for tall forms */
+}
+
+body.modal-open {
+	overflow-y: hidden;
+	position: fixed;
+	width: 100%;
 }
