@@ -7,6 +7,7 @@ import { swalConfirmCancel, swalBasic } from "./SwalCardMixins";
 import { FaTrash } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";
 import "../styles/Lift.css";
+import ExerciseModal from "./ExerciseModal";
 
 const LiftDetails = ({ liftId, reloadDetails }) => {
 	const [logs, setLogs] = useState(null);
@@ -68,12 +69,12 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 		setIsEditing(true);
 	};
 
-	const saveLog = async () => {
+	const saveLog = async (changedLog) => {
 		try {
-			await axios.put(`/lift_logs/${currentLog.id}`, currentLog);
+			await axios.put(`/lift_logs/${changedLog.id}`, changedLog);
 			setLogs((prevLogs) =>
 				prevLogs.map((log) =>
-					log.id === currentLog.id ? currentLog : log
+					log.id === changedLog.id ? changedLog : log
 				)
 			);
 			setIsEditing(false);
@@ -85,6 +86,11 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 			});
 		} catch (error) {
 			console.error("Error updating log: ", error);
+			swalBasic.fire({
+				title: `Failed To Update!\n${error.message}`,
+				icon: "error",
+			});
+			setIsEditing(false);
 		}
 	};
 
@@ -97,10 +103,34 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 							<div className="log-entry-container">
 								<div>
 									<h2>{log.movement_name}</h2>
-									<p>Sets: {log.sets}</p>
-									<p>Reps: {log.reps}</p>
-									<p>Weight: {log.weight}</p>
-									<p>Notes: {log.notes}</p>
+									<p>
+										<span className="font-bold">Sets:</span>{" "}
+										{log.sets}
+									</p>
+									<div className="mb-2">
+										<span className="font-bold">
+											Reps x Weight:
+										</span>
+										<div style={{ textIndent: "1rem" }}>
+											{log.reps.map((rep, index) => (
+												<span
+													key={index}
+													className="reps-weight"
+												>
+													{rep}x{log.weight[index]}
+													{index < log.reps.length - 1
+														? ", "
+														: ""}
+												</span>
+											))}
+										</div>
+									</div>
+									<div>
+										<span className="font-bold">
+											Notes:
+										</span>{" "}
+										{log.notes}
+									</div>
 								</div>
 								<div className="button-container">
 									<button
@@ -124,7 +154,14 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 				<Spinner />
 			)}
 
-			{/* Edit Dialog */}
+			<ExerciseModal
+				isOpen={isEditing}
+				initialData={currentLog}
+				onClose={() => setIsEditing(false)}
+				onSave={saveLog}
+			/>
+
+			{/* Edit Dialog
 			{isEditing && (
 				<div className="modal">
 					<div className="modal-content">
@@ -134,63 +171,140 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 							<input
 								className="default-input-box"
 								type="number"
-								value={currentLog.sets}
-								onChange={(e) =>
-									setCurrentLog({
-										...currentLog,
-										sets: e.target.value,
-									})
-								}
-							/>
-						</label>
-						<label>
-							Reps:
-							<input
-								className="default-input-box"
-								type="number"
-								value={currentLog.reps}
-								onChange={(e) =>
-									setCurrentLog({
-										...currentLog,
-										reps: e.target.value,
-									})
-								}
-							/>
-						</label>
-						<label>
-							Weight:
-							<input
-								className="default-input-box"
-								type="number"
-								value={currentLog.weight}
-								onChange={(e) =>
-									setCurrentLog({
-										...currentLog,
-										weight: e.target.value,
-									})
-								}
-							/>
-						</label>
-						<label>
-							Notes:
-							<br></br>
-							<textarea
-								style={{
-									width: "100%",
-									borderColor: "white",
-									border: "1px solid white",
-									borderRadius: "4px",
+								defaultValue={currentLog.sets}
+								onChange={(e) => {
+									const newSets = parseInt(
+										e.target.value,
+										10
+									);
+									const setChange = newSets - currentLog.sets;
+									if (isFinite(newSets)) {
+										setCurrentLog((prevState) => ({
+											...prevState,
+											sets: newSets,
+											reps:
+												setChange > 0
+													? currentLog.reps.concat(
+															new Array(
+																setChange
+															).fill("")
+													  )
+													: currentLog.reps.slice(
+															0,
+															newSets
+													  ),
+											weight:
+												setChange > 0
+													? currentLog.weight.concat(
+															new Array(
+																setChange
+															).fill("")
+													  )
+													: currentLog.weight.slice(
+															0,
+															newSets
+													  ),
+										}));
+									}
 								}}
-								className="default-input-box"
-								value={currentLog.notes}
-								onChange={(e) =>
-									setCurrentLog({
-										...currentLog,
-										notes: e.target.value,
-									})
-								}
 							/>
 						</label>
+
+						{Array.from({ length: currentLog.sets }).map(
+							(_, index) => (
+								<div key={index}>
+									{index === 0 && (
+										<div className="flex justify-between">
+											<div className="flex-1 text-center">
+												Reps
+											</div>
+											<div className="flex-1 text-center">
+												Weight
+											</div>
+										</div>
+									)}
+									<div className="flex gap-2">
+										<input
+											className={
+												"default-input-box flex-1" +
+												(index === 0 ? " mt-0" : "")
+											}
+											type="number"
+											value={currentLog.reps[index] || ""}
+											onChange={(e) => {
+												const newReps = [
+													...currentLog.reps,
+												];
+												newReps[index] = e.target.value;
+												setCurrentLog((prevState) => ({
+													...prevState,
+													reps: newReps,
+												}));
+											}}
+											placeholder={`Reps for Set ${
+												index + 1
+											}`}
+										/>
+										<input
+											className={
+												"default-input-box flex-1" +
+												(index === 0 ? " mt-0" : "")
+											}
+											type="number"
+											value={
+												currentLog.weight[index] || ""
+											}
+											onChange={(e) => {
+												const newWeight = [
+													...currentLog.weight,
+												];
+												newWeight[index] =
+													e.target.value;
+												setCurrentLog((prevState) => ({
+													...prevState,
+													weight: newWeight,
+												}));
+											}}
+											placeholder={`Weight for Set ${
+												index + 1
+											}`}
+										/>
+									</div>
+								</div>
+							)
+						)}
+						{currentLog.repsError && (
+							<p style={{ color: "red", fontSize: "0.8em" }}>
+								{currentLog.repsError}
+							</p>
+						)}
+
+						{currentLog.weightError && (
+							<p style={{ color: "red", fontSize: "0.8em" }}>
+								{currentLog.weightError}
+							</p>
+						)}
+						<textarea
+							className="default-input-box"
+							type="text"
+							style={{
+								width: "100%",
+								borderColor: "white",
+								border: "1px solid white",
+								borderRadius: "4px",
+								padding: "10px",
+								marginTop: "10px",
+								height: "fit-content",
+							}}
+							value={currentLog.notes}
+							onChange={(e) =>
+								setCurrentLog((prevState) => ({
+									...prevState,
+									notes: e.target.value,
+								}))
+							}
+							placeholder="Notes"
+						/>
 						<div className="modal-buttons">
 							<button onClick={saveLog}>Save</button>
 							<button
@@ -202,7 +316,7 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 						</div>
 					</div>
 				</div>
-			)}
+			)} */}
 		</>
 	);
 };
