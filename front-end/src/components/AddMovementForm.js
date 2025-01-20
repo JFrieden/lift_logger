@@ -103,7 +103,6 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 
 	// Handle selecting a movement from search results
 	const selectMovement = (movement) => {
-		console.log(movement);
 		setFormData((prevState) => ({
 			...prevState,
 			selectedMovement: movement,
@@ -126,6 +125,12 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 
 			const response = await axios.post("/lift_logs", newLiftLog);
 			onMovementAdded(response.data.lift_log);
+			swalBasic.fire({
+				title: "Exercise Added!",
+				icon: "success",
+				timer: 750,
+				showConfirmButton: false,
+			});
 			resetFormData();
 		}
 	};
@@ -179,124 +184,6 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 					sets: 1,
 				}}
 			/>
-
-			{/* {formData.selectedMovement && (
-				<div className="movement-form">
-					<h3>{formData.selectedMovement.name}</h3>
-					<input
-						className="default-input-box"
-						type="number"
-						inputMode="numeric"
-						min="1"
-						value={formData.sets}
-						onChange={(e) => {
-							const sets = parseInt(e.target.value, 10);
-							if (isFinite(sets)) {
-								setFormData((prevState) => ({
-									...prevState,
-									sets: sets,
-									reps: Array(sets).fill(""),
-									weight: Array(sets).fill(""),
-								}));
-							} else {
-								setFormData((prevState) => ({
-									...prevState,
-									sets: "",
-									reps: "",
-									weight: "",
-								}));
-							}
-						}}
-						placeholder="Sets"
-					/>
-					{formData.setsError && (
-						<p style={{ color: "red", fontSize: "0.8em" }}>
-							{formData.setsError}
-						</p>
-					)}
-					{Array.from({ length: formData.sets }).map((_, index) => (
-						<div key={index}>
-							{index === 0 && (
-								<div className="flex justify-between">
-									<div className="flex-1 text-center">
-										Reps
-									</div>
-									<div className="flex-1 text-center">
-										Weight
-									</div>
-								</div>
-							)}
-							<div className="flex space-x-2">
-								<input
-									className="default-input-box flex-1"
-									type="number"
-									inputMode="numeric"
-									min="1"
-									value={formData.reps[index] || ""}
-									onChange={(e) => {
-										const newReps = [...formData.reps];
-										newReps[index] = e.target.value;
-										setFormData((prevState) => ({
-											...prevState,
-											reps: newReps,
-										}));
-									}}
-									placeholder={`Reps for Set ${index + 1}`}
-								/>
-								<input
-									className="default-input-box flex-1"
-									type="number"
-									min="0"
-									inputMode="decimal"
-									value={formData.weight[index] || ""}
-									onChange={(e) => {
-										const newWeight = [...formData.weight];
-										newWeight[index] = e.target.value;
-										setFormData((prevState) => ({
-											...prevState,
-											weight: newWeight,
-										}));
-									}}
-									placeholder={`Weight for Set ${index + 1}`}
-								/>
-							</div>
-						</div>
-					))}
-					{formData.repsError && (
-						<p style={{ color: "red", fontSize: "0.8em" }}>
-							{formData.repsError}
-						</p>
-					)}
-
-					{formData.weightError && (
-						<p style={{ color: "red", fontSize: "0.8em" }}>
-							{formData.weightError}
-						</p>
-					)} 
-					<textarea
-						className="default-input-box"
-						type="text"
-						style={{
-							width: "100%",
-							borderColor: "white",
-							border: "1px solid white",
-							borderRadius: "4px",
-							padding: "10px",
-							marginTop: "10px",
-							height: "fit-content",
-						}}
-						value={formData.notes}
-						onChange={(e) =>
-							setFormData((prevState) => ({
-								...prevState,
-								notes: e.target.value,
-							}))
-						}
-						placeholder="Notes"
-					/>
-				</div>
-			)}
-                */}
 
 			{formData.creatingMovement && (
 				<div>

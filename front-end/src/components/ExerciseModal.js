@@ -3,56 +3,55 @@ import { swalBasic } from "./SwalCardMixins";
 
 const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 	const [log, setLog] = useState({
+		id: "",
 		movement_name: "",
-		sets: 1,
+		movement_id: "",
+		sets: "",
 		reps: [""],
 		weight: [""],
 		notes: "",
 		setsError: false,
 		repsErrorIdxs: [],
 		weightErrorIdxs: [],
-		...initialData,
 	});
 
-	const repsErrorMessage = "Reps must be positive integers.";
+	const repsErrorMessage = "Reps must be positive whole numbers.";
 	const weightErrorMessage = "Weights must be positive numbers.";
-	const setsErrorMessage = "Sets must be positive integers.";
+	const setsErrorMessage = "Sets must be positive whole numbers.";
 
-	const clearLog = () => {
-		setLog({
-			movement_name: "",
-			sets: 1,
-			reps: [""],
-			weight: [""],
-			notes: "",
-			setsError: false,
-			repsErrorIdxs: [],
-			weightErrorIdxs: [],
-		});
-	};
-
-	const clearChanges = () => {
-		setLog({
-			movement_name: "",
-			sets: 1,
-			reps: [""],
-			weight: [""],
-			notes: "",
-			setsError: false,
-			repsErrorIdxs: [],
-			weightErrorIdxs: [],
-			...initialData,
-		});
+	const handleClose = () => {
+		onClose();
 	};
 
 	useEffect(() => {
-		if (initialData) {
-			setLog((prevLog) => ({
-				...prevLog,
-				...initialData,
-			}));
+		if (isOpen) {
+			setLog({
+				id: initialData?.id || "",
+				movement_name: initialData?.movement_name || "",
+				movement_id: initialData?.movement_id || "",
+				sets: initialData?.sets || 1,
+				reps: initialData?.reps || [""],
+				weight: initialData?.weight || [""],
+				notes: initialData?.notes || "",
+				setsError: false,
+				repsErrorIdxs: [],
+				weightErrorIdxs: [],
+			});
+		} else {
+			// Reset the log state when modal is closed
+			setLog({
+				id: "",
+				movement_name: "",
+				sets: "",
+				reps: [""],
+				weight: [""],
+				notes: "",
+				setsError: false,
+				repsErrorIdxs: [],
+				weightErrorIdxs: [],
+			});
 		}
-	}, [initialData]);
+	}, [isOpen, initialData]);
 
 	const isPositiveInteger = (value) => value > 0 && Number.isInteger(value);
 	const isPositiveFloat = (value) => value > 0 && isFinite(value);
@@ -71,17 +70,20 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 		}
 	) => {
 		let valid = true;
-		const newErrors = {
-			setsError: false,
-			repsErrorIdxs: [],
-			weightErrorIdxs: [],
-		};
 
 		if (field === "sets" || field === "all") {
 			// Validate sets if sets is updated
 			if (!isPositiveInteger(updatedSets)) {
-				newErrors.setsError = true;
+				setLog((prevLog) => ({
+					...prevLog,
+					setsError: true,
+				}));
 				valid = false;
+			} else {
+				setLog((prevLog) => ({
+					...prevLog,
+					setsError: false,
+				}));
 			}
 		}
 
@@ -90,8 +92,18 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 
 			updatedReps.forEach((num, index) => {
 				if (!isPositiveInteger(num)) {
-					newErrors.repsErrorIdxs.push(index);
+					setLog((prevLog) => ({
+						...prevLog,
+						repsErrorIdxs: [...log.repsErrorIdxs, index],
+					}));
 					valid = false;
+				} else {
+					setLog((prevLog) => ({
+						...prevLog,
+						repsErrorIdxs: prevLog.repsErrorIdxs.filter(
+							(item) => item !== index
+						),
+					}));
 				}
 			});
 		}
@@ -100,16 +112,21 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 			// Validate each entry in weights array and record the index of invalid values
 			updatedWeights.forEach((num, index) => {
 				if (!isPositiveFloat(num)) {
-					newErrors.weightErrorIdxs.push(index);
+					setLog((prevLog) => ({
+						...prevLog,
+						weightErrorIdxs: [...log.weightErrorIdxs, index],
+					}));
 					valid = false;
+				} else {
+					setLog((prevLog) => ({
+						...prevLog,
+						weightErrorIdxs: prevLog.weightErrorIdxs.filter(
+							(item) => item !== index
+						),
+					}));
 				}
 			});
 		}
-
-		setLog((prevState) => ({
-			...prevState,
-			...newErrors,
-		}));
 
 		return valid;
 	};
@@ -118,8 +135,6 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 		if (validateInputs()) {
 			onSave(log);
 			onClose();
-			clearLog();
-			isOpen = false;
 		} else {
 			swalBasic.fire({
 				title: `Error Updating\n${log.movement_name}!`,
@@ -131,7 +146,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 	};
 
 	const handleSetChange = (newSets) => {
-		if (newSets) {
+		if (newSets > 0) {
 			const setChange = newSets - log.sets;
 			setLog((prevLog) => ({
 				...prevLog,
@@ -148,7 +163,9 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 		}
 	};
 
-	if (!isOpen) return null;
+	if (!isOpen) {
+		return <></>;
+	}
 
 	return (
 		<div className="modal">
@@ -167,7 +184,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 							if (e.target.value) {
 								validateInputs({
 									field: "sets",
-									updatedSets: parseInt(e.target.value),
+									updatedSets: parseFloat(e.target.value),
 								});
 							}
 						}}
@@ -176,7 +193,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 						<div
 							style={{
 								color: "red",
-								fontSize: "0.6rem",
+								fontSize: "0.75rem",
 								marginTop: "-10px",
 							}}
 						>
@@ -200,7 +217,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 									defaultValue={log.reps[index]}
 									onChange={async (e) => {
 										const newReps = [...log.reps];
-										newReps[index] = parseInt(
+										newReps[index] = parseFloat(
 											e.target.value
 										);
 										setLog((prevLog) => ({
@@ -211,6 +228,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 											validateInputs({
 												field: "reps",
 												updatedReps: newReps,
+												checkIdx: index,
 											});
 										}
 									}}
@@ -220,7 +238,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 									<div
 										style={{
 											color: "red",
-											fontSize: "0.6rem",
+											fontSize: "0.75rem",
 											marginTop: "-16px",
 										}}
 									>
@@ -256,7 +274,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 									<div
 										style={{
 											color: "red",
-											fontSize: "0.6rem",
+											fontSize: "0.75rem",
 											marginTop: "-16px",
 										}}
 									>
@@ -288,13 +306,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 				/>
 				<div className="modal-buttons">
 					<button onClick={handleSave}>Save</button>
-					<button
-						className="delete-button"
-						onClick={() => {
-							clearChanges();
-							onClose();
-						}}
-					>
+					<button className="delete-button" onClick={handleClose}>
 						Cancel
 					</button>
 				</div>
