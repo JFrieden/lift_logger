@@ -103,6 +103,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 
 	// Handle selecting a movement from search results
 	const selectMovement = (movement) => {
+		console.log(movement);
 		setFormData((prevState) => ({
 			...prevState,
 			selectedMovement: movement,
