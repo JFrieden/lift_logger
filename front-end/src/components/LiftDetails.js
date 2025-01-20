@@ -1,5 +1,5 @@
 //LiftDetails.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "../axios_instance";
 
 import Spinner from "./Spinner";
@@ -13,6 +13,8 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 	const [logs, setLogs] = useState(null);
 	const [currentLog, setCurrentLog] = useState(null);
 	const [isEditing, setIsEditing] = useState(false);
+
+	const listRef = useRef(null);
 
 	useEffect(() => {
 		const fetchLogs = async () => {
@@ -95,9 +97,9 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 	};
 
 	return (
-		<>
+		<div>
 			{logs ? (
-				<div className="exercise-list">
+				<div className="exercise-list" ref={listRef}>
 					{logs.map((log) => (
 						<div key={log.id} className="lift-card log-entry">
 							<div className="log-entry-container">
@@ -160,7 +162,8 @@ const LiftDetails = ({ liftId, reloadDetails }) => {
 				onClose={() => setIsEditing(false)}
 				onSave={saveLog}
 			/>
-		</>
+		</div>
+
 	);
 };
 

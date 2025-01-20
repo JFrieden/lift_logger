@@ -7,8 +7,9 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 		movement_name: "",
 		movement_id: "",
 		sets: "",
-		reps: [""],
-		weight: [""],
+		reps: [NaN],
+		weight: [NaN],
+
 		notes: "",
 		setsError: false,
 		repsErrorIdxs: [],
@@ -30,8 +31,9 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 				movement_name: initialData?.movement_name || "",
 				movement_id: initialData?.movement_id || "",
 				sets: initialData?.sets || 1,
-				reps: initialData?.reps || [""],
-				weight: initialData?.weight || [""],
+				reps: initialData?.reps || [NaN],
+				weight: initialData?.weight || [NaN],
+
 				notes: initialData?.notes || "",
 				setsError: false,
 				repsErrorIdxs: [],
@@ -43,8 +45,8 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 				id: "",
 				movement_name: "",
 				sets: "",
-				reps: [""],
-				weight: [""],
+				reps: [NaN],
+				weight: [NaN],
 				notes: "",
 				setsError: false,
 				repsErrorIdxs: [],
@@ -62,11 +64,15 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 			updatedSets = log.sets,
 			updatedReps = log.reps,
 			updatedWeights = log.weight,
+			nullCheck = false,
+
 		} = {
 			field: "all",
 			updatedSets: log.sets,
 			updatedReps: log.reps,
 			updatedWeights: log.weight,
+			nullCheck: true,
+
 		}
 	) => {
 		let valid = true;
@@ -83,6 +89,13 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 				setLog((prevLog) => ({
 					...prevLog,
 					setsError: false,
+					repsErrorIdxs: prevLog.repsErrorIdxs.filter(
+						(item) => item < prevLog.sets
+					),
+					weightErrorIdxs: prevLog.weightErrorIdxs.filter(
+						(item) => item < prevLog.sets
+					),
+
 				}));
 			}
 		}
@@ -91,17 +104,22 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 			// Validate each entry in reps array and record the index of invalid values
 
 			updatedReps.forEach((num, index) => {
-				if (!isPositiveInteger(num)) {
+				if (
+					!isPositiveInteger(num) &&
+					(nullCheck ? true : !Number.isNaN(num))
+				) {
 					setLog((prevLog) => ({
 						...prevLog,
-						repsErrorIdxs: [...log.repsErrorIdxs, index],
+						repsErrorIdxs: [...prevLog.repsErrorIdxs, index],
+
 					}));
 					valid = false;
 				} else {
 					setLog((prevLog) => ({
 						...prevLog,
 						repsErrorIdxs: prevLog.repsErrorIdxs.filter(
-							(item) => item !== index
+							(item) => item !== index && item < prevLog.sets
+
 						),
 					}));
 				}
@@ -111,17 +129,22 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 		if (field === "weight" || field === "all") {
 			// Validate each entry in weights array and record the index of invalid values
 			updatedWeights.forEach((num, index) => {
-				if (!isPositiveFloat(num)) {
+				if (
+					!isPositiveFloat(num) &&
+					(nullCheck ? true : !Number.isNaN(num))
+				) {
 					setLog((prevLog) => ({
 						...prevLog,
-						weightErrorIdxs: [...log.weightErrorIdxs, index],
+						weightErrorIdxs: [...prevLog.weightErrorIdxs, index],
+
 					}));
 					valid = false;
 				} else {
 					setLog((prevLog) => ({
 						...prevLog,
 						weightErrorIdxs: prevLog.weightErrorIdxs.filter(
-							(item) => item !== index
+							(item) => item !== index && item < prevLog.sets
+
 						),
 					}));
 				}
@@ -146,26 +169,29 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 	};
 
 	const handleSetChange = (newSets) => {
-		if (newSets > 0) {
+		if (newSets >= 0) {
 			const setChange = newSets - log.sets;
 			setLog((prevLog) => ({
 				...prevLog,
 				sets: newSets,
 				reps:
 					setChange > 0
-						? prevLog.reps.concat(new Array(setChange).fill(""))
+						? prevLog.reps.concat(new Array(setChange).fill(NaN))
 						: prevLog.reps.slice(0, newSets),
 				weight:
 					setChange > 0
-						? prevLog.weight.concat(new Array(setChange).fill(""))
+						? prevLog.weight.concat(new Array(setChange).fill(NaN))
 						: prevLog.weight.slice(0, newSets),
 			}));
 		}
 	};
 
 	if (!isOpen) {
+		document.body.classList.remove("modal-open");
 		return <></>;
 	}
+	document.body.classList.add("modal-open");
+
 
 	return (
 		<div className="modal">
@@ -228,7 +254,7 @@ const ExerciseModal = ({ isOpen, onClose, onSave, initialData }) => {
 											validateInputs({
 												field: "reps",
 												updatedReps: newReps,
-												checkIdx: index,
+
 											});
 										}
 									}}

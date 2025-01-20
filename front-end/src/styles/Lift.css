@@ -88,10 +88,11 @@
 }
 
 .exercise-list {
+	margin-bottom: 10px;
 	padding-bottom: min(2.5rem, 7.5%);
-	overflow-y: scroll;
-	height: auto;
+	box-sizing: border-box;
 }
+
 /* 
 .reps-weight {
 	display: flex;
