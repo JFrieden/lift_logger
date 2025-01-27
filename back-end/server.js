@@ -29,6 +29,19 @@ app.use(liftLogRoutes);
 const liftRoutes = require("./routes/lifts");
 app.use("/lifts", liftRoutes);
 
+app.get("/", (req, res) => {
+	res.sendFile(path.join(__dirname, "../front-end/build/index.html"));
+});
+
+if (process.env.NODE_ENV === "production") {
+	app.use(express.static(path.resolve(__dirname, "../front-end/build")));
+	app.get("*", (req, res) => {
+		res.sendFile(
+			path.resolve(__dirname, "../front-end/build", "index.html")
+		);
+	});
+}
+
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`);
 });
