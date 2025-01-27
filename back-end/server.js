@@ -22,11 +22,10 @@ app.use((req, res, next) => {
 
 app.use(
 	cors({
-
-		origin:
-			process.env.NODE_ENV === "production"
-				? "https://lift-logger-4b08aa94a99a.herokuapp.com/"
-				: "http://localhost:3000",
+		origin: [
+			"http://localhost:3000",
+			"https://lift-logger-4b08aa94a99a.herokuapp.com/",
+		],
 
 		optionsSuccessStatus: 200,
 	})
