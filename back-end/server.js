@@ -8,6 +8,20 @@ if (process.env.NODE_ENV !== "production")
 
 const app = express();
 
+if (process.env.NODE_ENV === "production") {
+	console.log(
+		"It's a production run! Pointing all requests to the frontend build! (Looking at):",
+		path.join(__dirname, "../front-end/build")
+	);
+
+	app.use(express.static(path.join(__dirname, "../front-end/build")));
+	app.get("*", (req, res) => {
+		res.sendFile(
+			path.resolve(__dirname, "../front-end/build", "index.html")
+		);
+	});
+}
+
 app.use(cookieParser());
 
 app.use((req, res, next) => {
@@ -46,20 +60,6 @@ app.use(liftLogRoutes);
 
 const liftRoutes = require("./routes/lifts");
 app.use("/lifts", liftRoutes);
-
-if (process.env.NODE_ENV === "production") {
-	console.log(
-		"It's a production run! Pointing all requests to the frontend build! (Looking at):",
-		path.join(__dirname, "../front-end/build")
-	);
-
-	app.use(express.static(path.join(__dirname, "../front-end/build")));
-	app.get("*", (req, res) => {
-		res.sendFile(
-			path.resolve(__dirname, "../front-end/build", "index.html")
-		);
-	});
-}
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`);
