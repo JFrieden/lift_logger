@@ -34,16 +34,6 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use(
-	cors({
-		origin: [
-			"http://localhost:3000",
-			"https://lift-logger-4b08aa94a99a.herokuapp.com/",
-		],
-
-		optionsSuccessStatus: 200,
-	})
-);
 
 app.use(express.json());
 
