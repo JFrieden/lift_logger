@@ -1,5 +1,12 @@
 // ./contexts/AuthContext.js
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+	createContext,
+	useState,
+	useContext,
+	useEffect,
+	useRef,
+	useCallback,
+} from "react";
 import axios from "../axios_instance";
 
 const AuthContext = createContext();
@@ -12,20 +19,20 @@ export const AuthProvider = ({ children }) => {
 	const [loginMessage, setLoginMessage] = useState("");
 
 	// Flag to avoid multiple simultaneous refresh attempts
-	let isRefreshing = false;
-	let failedQueue = [];
+	const isRefreshingRef = useRef(false);
+	const failedQueueRef = useRef([]);
 
 	// Process queued requests after token refresh
-	const processQueue = (error, token = null) => {
-		failedQueue.forEach((prom) => {
+	const processQueue = useCallback((error, token = null) => {
+		failedQueueRef.current.forEach((prom) => {
 			if (token) {
 				prom.resolve(token);
 			} else {
 				prom.reject(error);
 			}
 		});
-		failedQueue = [];
-	};
+		failedQueueRef.current = [];
+	}, []);
 
 	// Axios request interceptor
 	useEffect(() => {
@@ -48,9 +55,9 @@ export const AuthProvider = ({ children }) => {
 
 				if (error.response?.status === 401 && !originalRequest._retry) {
 					// Prevent duplicate refresh attempts
-					if (isRefreshing) {
+					if (isRefreshingRef.current) {
 						return new Promise((resolve, reject) => {
-							failedQueue.push({ resolve, reject });
+							failedQueueRef.current.push({ resolve, reject });
 						})
 							.then((token) => {
 								originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -60,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 					}
 
 					originalRequest._retry = true;
-					isRefreshing = true;
+					isRefreshingRef.current = true;
 
 					try {
 						// Refresh the token
@@ -75,14 +82,14 @@ export const AuthProvider = ({ children }) => {
 						// Update token in localStorage
 						localStorage.setItem("token", newAccessToken);
 						processQueue(null, newAccessToken);
-						isRefreshing = false;
+						isRefreshingRef.current = false;
 
 						// Retry the original request
 						originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 						return axios(originalRequest);
 					} catch (refreshError) {
 						processQueue(refreshError, null);
-						isRefreshing = false;
+						isRefreshingRef.current = false;
 						logout();
 						return Promise.reject(refreshError);
 					}
@@ -97,7 +104,7 @@ export const AuthProvider = ({ children }) => {
 			axios.interceptors.request.eject(requestInterceptor);
 			axios.interceptors.response.eject(responseInterceptor);
 		};
-	}, []);
+	}, [processQueue]);
 
 	// Signup function
 	const signUp = async (email, password) => {
