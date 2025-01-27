@@ -34,7 +34,9 @@ router.post("/login", async (req, res) => {
 	if (error) return res.status(400).json({ error: error.message });
 
 	res.cookie("refresh_token", data.session.refresh_token, {
+
 		secure: process.env.NODE_ENV === "production",
+
 		httpOnly: true,
 		sameSite: "strict",
 		path: "/auth/refresh_token",
@@ -84,7 +86,9 @@ router.post("/googleAuth", async (req, res) => {
 
 	res.cookie("refresh_token", data.session.refresh_token, {
 		httpOnly: true,
+
 		secure: process.env.NODE_ENV === "production",
+
 		sameSite: "strict",
 		path: "/auth/refresh_token",
 	});
