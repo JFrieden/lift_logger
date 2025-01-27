@@ -11,18 +11,95 @@ export const AuthProvider = ({ children }) => {
 	const [isLoading, setIsLoading] = useState(true); // Loading state
 	const [loginMessage, setLoginMessage] = useState("");
 
-	// Set up axios to include the token in every request
-	axios.interceptors.request.use(
-		(config) => {
-			const token = localStorage.getItem("token");
-			if (token) {
-				config.headers.Authorization = `Bearer ${token}`;
-			}
-			return config;
-		},
-		(error) => Promise.reject(error)
-	);
+	// Flag to avoid multiple simultaneous refresh attempts
+	let isRefreshing = false;
+	let failedQueue = [];
 
+	// Process queued requests after token refresh
+	const processQueue = (error, token = null) => {
+		failedQueue.forEach((prom) => {
+			if (token) {
+				prom.resolve(token);
+			} else {
+				prom.reject(error);
+			}
+		});
+		failedQueue = [];
+	};
+
+	// Axios request interceptor
+	useEffect(() => {
+		const requestInterceptor = axios.interceptors.request.use(
+			(config) => {
+				const token = localStorage.getItem("token");
+				if (token) {
+					config.headers.Authorization = `Bearer ${token}`;
+				}
+				return config;
+			},
+			(error) => Promise.reject(error)
+		);
+
+		// Axios response interceptor for handling 401 errors
+		const responseInterceptor = axios.interceptors.response.use(
+			(response) => response,
+			async (error) => {
+				const originalRequest = error.config;
+
+				if (error.response?.status === 401 && !originalRequest._retry) {
+					// Prevent duplicate refresh attempts
+					if (isRefreshing) {
+						return new Promise((resolve, reject) => {
+							failedQueue.push({ resolve, reject });
+						})
+							.then((token) => {
+								originalRequest.headers.Authorization = `Bearer ${token}`;
+								return axios(originalRequest);
+							})
+							.catch((err) => Promise.reject(err));
+					}
+
+					originalRequest._retry = true;
+					isRefreshing = true;
+
+					try {
+						// Refresh the token
+						const refreshResponse = await axios.post(
+							"/auth/refresh_token",
+							{},
+							{ withCredentials: true }
+						);
+						const newAccessToken =
+							refreshResponse.data.access_token;
+
+						// Update token in localStorage
+						localStorage.setItem("token", newAccessToken);
+						processQueue(null, newAccessToken);
+						isRefreshing = false;
+
+						// Retry the original request
+						originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+						return axios(originalRequest);
+					} catch (refreshError) {
+						processQueue(refreshError, null);
+						isRefreshing = false;
+						logout();
+						return Promise.reject(refreshError);
+					}
+				}
+
+				return Promise.reject(error);
+			}
+		);
+
+		// Cleanup interceptors on unmount
+		return () => {
+			axios.interceptors.request.eject(requestInterceptor);
+			axios.interceptors.response.eject(responseInterceptor);
+		};
+	}, []);
+
+	// Signup function
 	const signUp = async (email, password) => {
 		try {
 			const response = await axios.post("/auth/signup", {
@@ -31,11 +108,15 @@ export const AuthProvider = ({ children }) => {
 			});
 			return response;
 		} catch (error) {
-			console.error("Signup Error", error.response);
+			console.error(
+				"Signup Error:",
+				error.response?.data || error.message
+			);
 			return error.response;
 		}
 	};
 
+	// Login function
 	const login = async (email, password) => {
 		try {
 			const response = await axios.post("/auth/login", {
@@ -44,7 +125,7 @@ export const AuthProvider = ({ children }) => {
 			});
 			localStorage.setItem("token", response.data.token);
 			setUser(response.data.user);
-			setLoginMessage("Login Success!");
+			setLoginMessage("Login Successful!");
 			return true;
 		} catch (error) {
 			console.error("Login Error:", error.message);
@@ -53,27 +134,30 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
+	// Google Login function
 	const loginWithGoogle = async (googleResponse) => {
 		try {
-			const LLResponse = await axios.post("/auth/googleAuth", {
+			const response = await axios.post("/auth/googleAuth", {
 				token: googleResponse.credential,
 			});
-			localStorage.setItem("token", LLResponse.data.token);
-			setUser(LLResponse.data.user);
-			setLoginMessage("Google Auth Success!");
+			localStorage.setItem("token", response.data.token);
+			setUser(response.data.user);
+			setLoginMessage("Google Auth Successful!");
 			return true;
 		} catch (error) {
-			console.error("Login Error: ", error.message);
+			console.error("Google Login Error:", error.message);
 			setLoginMessage(`Login Error: ${error.message}`);
 			return false;
 		}
 	};
 
+	// Logout function
 	const logout = () => {
 		setUser(null);
 		localStorage.removeItem("token");
 	};
 
+	// Fetch authenticated user
 	useEffect(() => {
 		const fetchUser = async () => {
 			const token = localStorage.getItem("token");
@@ -83,15 +167,13 @@ export const AuthProvider = ({ children }) => {
 			}
 
 			try {
-				const response = await axios.get("/auth/me", {
-					headers: { Authorization: `Bearer ${token}` },
-				});
+				const response = await axios.get("/auth/me");
 				setUser(response.data.user);
 			} catch (error) {
-				console.error("Error fetching authenticated user", error);
-				localStorage.removeItem("token"); // Remove token if invalid
+				console.error("Error fetching authenticated user:", error);
+				localStorage.removeItem("token"); // Clear invalid token
 			} finally {
-				setIsLoading(false); // Stop loading once the check is complete
+				setIsLoading(false);
 			}
 		};
 
