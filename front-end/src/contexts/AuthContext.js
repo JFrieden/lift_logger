@@ -1,12 +1,5 @@
 // ./contexts/AuthContext.js
-import React, {
-	createContext,
-	useState,
-	useContext,
-	useEffect,
-	useRef,
-	useCallback,
-} from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "../axios_instance";
 
 const AuthContext = createContext();
@@ -18,95 +11,18 @@ export const AuthProvider = ({ children }) => {
 	const [isLoading, setIsLoading] = useState(true); // Loading state
 	const [loginMessage, setLoginMessage] = useState("");
 
-	// Flag to avoid multiple simultaneous refresh attempts
-	const isRefreshingRef = useRef(false);
-	const failedQueueRef = useRef([]);
-
-	// Process queued requests after token refresh
-	const processQueue = useCallback((error, token = null) => {
-		failedQueueRef.current.forEach((prom) => {
+	// Set up axios to include the token in every request
+	axios.interceptors.request.use(
+		(config) => {
+			const token = localStorage.getItem("token");
 			if (token) {
-				prom.resolve(token);
-			} else {
-				prom.reject(error);
+				config.headers.Authorization = `Bearer ${token}`;
 			}
-		});
-		failedQueueRef.current = [];
-	}, []);
+			return config;
+		},
+		(error) => Promise.reject(error)
+	);
 
-	// Axios request interceptor
-	useEffect(() => {
-		const requestInterceptor = axios.interceptors.request.use(
-			(config) => {
-				const token = localStorage.getItem("token");
-				if (token) {
-					config.headers.Authorization = `Bearer ${token}`;
-				}
-				return config;
-			},
-			(error) => Promise.reject(error)
-		);
-
-		// Axios response interceptor for handling 401 errors
-		const responseInterceptor = axios.interceptors.response.use(
-			(response) => response,
-			async (error) => {
-				const originalRequest = error.config;
-
-				if (error.response?.status === 401 && !originalRequest._retry) {
-					// Prevent duplicate refresh attempts
-					if (isRefreshingRef.current) {
-						return new Promise((resolve, reject) => {
-							failedQueueRef.current.push({ resolve, reject });
-						})
-							.then((token) => {
-								originalRequest.headers.Authorization = `Bearer ${token}`;
-								return axios(originalRequest);
-							})
-							.catch((err) => Promise.reject(err));
-					}
-
-					originalRequest._retry = true;
-					isRefreshingRef.current = true;
-
-					try {
-						// Refresh the token
-						const refreshResponse = await axios.post(
-							"/auth/refresh_token",
-							{},
-							{ withCredentials: true }
-						);
-						const newAccessToken =
-							refreshResponse.data.access_token;
-
-						// Update token in localStorage
-						localStorage.setItem("token", newAccessToken);
-						processQueue(null, newAccessToken);
-						isRefreshingRef.current = false;
-
-						// Retry the original request
-						originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-						return axios(originalRequest);
-					} catch (refreshError) {
-						processQueue(refreshError, null);
-						isRefreshingRef.current = false;
-						logout();
-						return Promise.reject(refreshError);
-					}
-				}
-
-				return Promise.reject(error);
-			}
-		);
-
-		// Cleanup interceptors on unmount
-		return () => {
-			axios.interceptors.request.eject(requestInterceptor);
-			axios.interceptors.response.eject(responseInterceptor);
-		};
-	}, [processQueue]);
-
-	// Signup function
 	const signUp = async (email, password) => {
 		try {
 			const response = await axios.post("/auth/signup", {
@@ -115,15 +31,11 @@ export const AuthProvider = ({ children }) => {
 			});
 			return response;
 		} catch (error) {
-			console.error(
-				"Signup Error:",
-				error.response?.data || error.message
-			);
+			console.error("Signup Error", error.response);
 			return error.response;
 		}
 	};
 
-	// Login function
 	const login = async (email, password) => {
 		try {
 			const response = await axios.post("/auth/login", {
@@ -132,7 +44,7 @@ export const AuthProvider = ({ children }) => {
 			});
 			localStorage.setItem("token", response.data.token);
 			setUser(response.data.user);
-			setLoginMessage("Login Successful!");
+			setLoginMessage("Login Success!");
 			return true;
 		} catch (error) {
 			console.error("Login Error:", error.message);
@@ -141,30 +53,27 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
-	// Google Login function
 	const loginWithGoogle = async (googleResponse) => {
 		try {
-			const response = await axios.post("/auth/googleAuth", {
+			const LLResponse = await axios.post("/auth/googleAuth", {
 				token: googleResponse.credential,
 			});
-			localStorage.setItem("token", response.data.token);
-			setUser(response.data.user);
-			setLoginMessage("Google Auth Successful!");
+			localStorage.setItem("token", LLResponse.data.token);
+			setUser(LLResponse.data.user);
+			setLoginMessage("Google Auth Success!");
 			return true;
 		} catch (error) {
-			console.error("Google Login Error:", error.message);
+			console.error("Login Error: ", error.message);
 			setLoginMessage(`Login Error: ${error.message}`);
 			return false;
 		}
 	};
 
-	// Logout function
 	const logout = () => {
 		setUser(null);
 		localStorage.removeItem("token");
 	};
 
-	// Fetch authenticated user
 	useEffect(() => {
 		const fetchUser = async () => {
 			const token = localStorage.getItem("token");
@@ -174,13 +83,15 @@ export const AuthProvider = ({ children }) => {
 			}
 
 			try {
-				const response = await axios.get("/auth/me");
+				const response = await axios.get("/auth/me", {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 				setUser(response.data.user);
 			} catch (error) {
-				console.error("Error fetching authenticated user:", error);
-				localStorage.removeItem("token"); // Clear invalid token
+				console.error("Error fetching authenticated user", error);
+				localStorage.removeItem("token"); // Remove token if invalid
 			} finally {
-				setIsLoading(false);
+				setIsLoading(false); // Stop loading once the check is complete
 			}
 		};
 
