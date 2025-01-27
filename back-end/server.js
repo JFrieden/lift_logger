@@ -22,7 +22,12 @@ app.use((req, res, next) => {
 
 app.use(
 	cors({
-		origin: "http://localhost:3000",
+
+		origin:
+			process.env.NODE_ENV === "production"
+				? "https://lift-logger-4b08aa94a99a.herokuapp.com/"
+				: "http://localhost:3000",
+
 		optionsSuccessStatus: 200,
 	})
 );
@@ -42,10 +47,6 @@ app.use(liftLogRoutes);
 
 const liftRoutes = require("./routes/lifts");
 app.use("/lifts", liftRoutes);
-
-app.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname, "../front-end/build/index.html"));
-});
 
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.resolve(__dirname, "../front-end/build")));
