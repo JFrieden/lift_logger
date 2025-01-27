@@ -102,7 +102,6 @@ const Home = () => {
 					backgroundColor: "var(--dark-gray)",
 				}}
 				onChange={(e) => handleSearch(e.target.value)}
-				s
 				placeholder="🔎︎ Search Lifts"
 			></input>
 
