@@ -9,7 +9,6 @@ if (process.env.NODE_ENV !== "production")
 const app = express();
 app.use(cookieParser());
 
-// 🔄 Fix: Do NOT set Content-Type globally
 app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Credentials", "true");
 	res.header(
@@ -39,17 +38,6 @@ app.use(
 
 app.use(express.json());
 
-if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.resolve(__dirname, "../front-end/build")));
-
-	// Serve React frontend for all unknown routes
-	app.get("*", (req, res) => {
-		res.sendFile(
-			path.resolve(__dirname, "../front-end/build", "index.html")
-		);
-	});
-}
-
 const authRoutes = require("./routes/auth");
 app.use("/auth", authRoutes);
 
@@ -61,6 +49,17 @@ app.use(liftLogRoutes);
 
 const liftRoutes = require("./routes/lifts");
 app.use("/lifts", liftRoutes);
+
+if (process.env.NODE_ENV === "production") {
+	app.use(express.static(path.resolve(__dirname, "../front-end/build")));
+
+	// Serve React frontend for all unknown routes
+	app.get("*", (req, res) => {
+		res.sendFile(
+			path.resolve(__dirname, "../front-end/build", "index.html")
+		);
+	});
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
