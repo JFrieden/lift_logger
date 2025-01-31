@@ -1,10 +1,10 @@
 const express = require("express");
+const { createClient } = require("@supabase/supabase-js");
 const path = require("path");
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
 
 if (process.env.NODE_ENV !== "production")
 	require("dotenv").config({ path: "../.env" });
+const cors = require("cors");
 
 const app = express();
 
@@ -35,6 +35,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
+
 const authRoutes = require("./routes/auth"); // Import your auth routes
 app.use("/auth", authRoutes); // All routes in authRoutes.js will now be prefixed with /auth
 
@@ -46,6 +47,10 @@ app.use(liftLogRoutes);
 
 const liftRoutes = require("./routes/lifts");
 app.use("/lifts", liftRoutes);
+
+app.get("/", (req, res) => {
+	res.sendFile(path.join(__dirname, "../front-end/build/index.html"));
+});
 
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.resolve(__dirname, "../front-end/build")));
