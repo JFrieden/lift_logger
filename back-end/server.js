@@ -27,6 +27,7 @@ app.use(
 				? "https://lift-logger-4b08aa94a99a.herokuapp.com"
 				: "http://localhost:3000",
 		optionsSuccessStatus: 200,
+		credentials: true,
 	})
 );
 

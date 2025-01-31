@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
 	res.cookie("refresh_token", data.session.refresh_token, {
 		secure: process.env.NODE_ENV === "production",
 		httpOnly: true,
-		sameSite: "strict",
+		sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Required for cross-origin cookies        ,
 		path: "/auth/refresh_token",
 	});
 
@@ -85,7 +85,7 @@ router.post("/googleAuth", async (req, res) => {
 	res.cookie("refresh_token", data.session.refresh_token, {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
-		sameSite: "strict",
+		sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Required for cross-origin cookies
 		path: "/auth/refresh_token",
 	});
 
@@ -114,7 +114,7 @@ router.post("/refresh_token", async (req, res) => {
 	res.cookie("refresh_token", data.session.refresh_token, {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
-		sameSite: "Strict",
+		sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Required for cross-origin cookies
 		path: "/auth/refresh_token",
 	});
 
