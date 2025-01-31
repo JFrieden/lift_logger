@@ -84,7 +84,7 @@ router.post("/googleAuth", async (req, res) => {
 
 	res.cookie("refresh_token", data.session.refresh_token, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV == "production",
+		secure: process.env.NODE_ENV === "production",
 		sameSite: "strict",
 		path: "/auth/refresh_token",
 	});
