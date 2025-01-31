@@ -11,13 +11,18 @@ app.use(cookieParser());
 
 // 🔄 Fix: Do NOT set Content-Type globally
 app.use((req, res, next) => {
-	if (!req.path.startsWith("/auth") && !req.path.startsWith("/api")) {
-		res.header("Access-Control-Allow-Credentials", "true");
-		res.header(
-			"Access-Control-Allow-Headers",
-			"Origin, X-Requested-With, Content-Type, Accept"
-		);
-	}
+	res.header("Access-Control-Allow-Credentials", "true");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept"
+	);
+
+	res.header(
+		"Cache-Control",
+		"no-store, no-cache, must-revalidate, proxy-revalidate"
+	);
+	res.header("Pragma", "no-cache");
+	res.header("Expires", "0");
 	next();
 });
 
