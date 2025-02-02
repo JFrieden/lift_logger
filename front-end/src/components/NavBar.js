@@ -16,8 +16,8 @@ const NavBar = () => {
 	const { openNewLiftModal } = useNewLiftModal();
 
 	const isActive = (path) => location.pathname === path;
-	const activeStyle = { color: "slategray", fontSize: "2em" }; // Darkened color for active icon
-	const inactiveStyle = { fontSize: "2em" };
+	const activeStyle = { color: "slategray", fontSize: "2.5em" }; // Darkened color for active icon
+	const inactiveStyle = { fontSize: "2.5em" };
 
 	if (isMobile) {
 		return (
