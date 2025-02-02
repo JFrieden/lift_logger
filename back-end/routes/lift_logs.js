@@ -5,8 +5,16 @@ const authenticateToken = require("../middleware/authMiddleware");
 
 // CREATE: Add a new lift log
 router.post("/lift_logs", authenticateToken, async (req, res) => {
-	const { lift_id, movement_id, movement_name, sets, reps, weight, notes } =
-		req.body;
+	const {
+		lift_id,
+		movement_id,
+		movement_name,
+		sets,
+		reps,
+		weight,
+		notes,
+		order,
+	} = req.body;
 	const userId = req.user.id;
 
 	const { data, error } = await supabase
@@ -21,6 +29,7 @@ router.post("/lift_logs", authenticateToken, async (req, res) => {
 				weight,
 				user_id: userId,
 				notes,
+				order,
 			},
 		])
 		.select();

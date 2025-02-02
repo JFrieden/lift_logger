@@ -114,6 +114,10 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 	// Handle form submission
 	const handleSubmitLog = async (log) => {
 		if (formData.selectedMovement) {
+			// TODO: There's a cheaper way to get the order than this.
+			const liftLen =
+				(await axios.get(`lift_logs/${liftId}`)).data.length + 1;
+
 			const newLiftLog = {
 				movement_id: log.movement_id,
 				movement_name: log.movement_name,
@@ -122,8 +126,8 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 				reps: log.reps,
 				weight: log.weight,
 				notes: log.notes,
+				order: liftLen,
 			};
-
 			const response = await axios.post("/lift_logs", newLiftLog);
 			onMovementAdded(response.data.lift_log);
 			swalBasic.fire({
