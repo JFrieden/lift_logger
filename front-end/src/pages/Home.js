@@ -10,10 +10,9 @@ import Spinner from "../components/Spinner";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "../axios_instance";
 import LiftGridContainer from "../components/LiftGridContainer";
-import NavBar from "../components/NavBar";
 import { debounce } from "lodash";
 import { useMediaQuery } from "react-responsive";
-import NewLiftModal from "../components/NewLiftModal";
+import { useNewLiftModal } from "../contexts/NewLiftModalContext";
 
 const Home = () => {
 	const { user } = useAuth();
@@ -21,7 +20,7 @@ const Home = () => {
 	const [searchTerm, setSearchTerm] = useState(""); // Only used for asthetic concern
 	const navigate = useNavigate();
 	const isMobile = useMediaQuery({ maxWidth: 768 });
-	const [setCreateNewLift, createNewLift] = useState(false);
+	const { openNewLiftModal } = useNewLiftModal();
 
 	useEffect(() => {
 		const fetchLifts = async () => {
@@ -76,7 +75,7 @@ const Home = () => {
 						{!isMobile && (
 							<button
 								className="icon-left-button small-button icon-txt-wrapper inline-flex items-center"
-								onClick={() => setCreateNewLift(true)}
+								onClick={() => openNewLiftModal()}
 							>
 								<FaCirclePlus
 									style={{

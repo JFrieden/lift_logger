@@ -10,8 +10,6 @@ import Home from "./pages/Home";
 import CreateLift from "./pages/CreateLift";
 import Lift from "./pages/Lift";
 import Charts from "./pages/Charts";
-import NavBar from "./components/NavBar";
-import NewLiftModal from "./components/NewLiftModal";
 import Profile from "./pages/Profile";
 import MainLayout from "./MainLayout";
 
