@@ -75,6 +75,7 @@ const CreateLift = () => {
 						reps: exercise.reps,
 						weight: exercise.weight,
 						notes: exercise.notes,
+						order: exercise.order,
 					});
 				});
 				// Proceed with navigation once the alert has finished
