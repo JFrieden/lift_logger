@@ -23,8 +23,8 @@ const NavBar = () => {
 		return (
 			<>
 				<div
+					className="mobile-nav flex row justify-evenly fixed bottom-0 left-0 w-full py-2 h-[var(--mobile-navbar-max-height)] items-beginning"
 
-					className="mobile-nav flex row justify-evenly fixed bottom-0 left-0 w-full py-2 h-[var(--mobile-navbar-max-height)] items-center"
 					style={{
 						backgroundColor: "var(--background-gray)",
 						zIndex: 1000,

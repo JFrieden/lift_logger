@@ -118,7 +118,7 @@ router.post("/refresh_token", async (req, res) => {
 		path: "/auth/refresh_token",
 	});
 
-	res.json({
+	res.status(200).json({
 		access_token: data.session.access_token,
 		user: data.user,
 	});

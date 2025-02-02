@@ -34,6 +34,60 @@ export const AuthProvider = ({ children }) => {
 		failedQueueRef.current = [];
 	}, []);
 
+	// Axios response interceptor for handling 401 errors
+	axios.interceptors.response.use(
+		(response) => response,
+		async (error) => {
+			const originalRequest = error.config;
+
+			if (
+				(error.response?.status === 401 ||
+					error.response?.status === 403) &&
+				!originalRequest._retry
+			) {
+				// Prevent duplicate refresh attempts
+				if (isRefreshingRef.current) {
+					return new Promise((resolve, reject) => {
+						failedQueueRef.current.push({ resolve, reject });
+					})
+						.then((token) => {
+							originalRequest.headers.Authorization = `Bearer ${token}`;
+							return axios(originalRequest);
+						})
+						.catch((err) => Promise.reject(err));
+				}
+
+				originalRequest._retry = true;
+				isRefreshingRef.current = true;
+
+				try {
+					// Refresh the token
+					const refreshResponse = await axios.post(
+						"/auth/refresh_token",
+						{},
+						{ withCredentials: true }
+					);
+					const newAccessToken = refreshResponse.data.access_token;
+
+					// Update token in localStorage
+					localStorage.setItem("token", newAccessToken);
+					processQueue(null, newAccessToken);
+					isRefreshingRef.current = false;
+
+					// Retry the original request
+					originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+					return axios(originalRequest);
+				} catch (refreshError) {
+					processQueue(refreshError, null);
+					isRefreshingRef.current = false;
+					logout();
+					return Promise.reject(refreshError);
+				}
+			}
+
+			return Promise.reject(error);
+		}
+	);
 	// Axios request interceptor
 	useEffect(() => {
 		axios.interceptors.request.use(
@@ -45,62 +99,6 @@ export const AuthProvider = ({ children }) => {
 				return config;
 			},
 			(error) => Promise.reject(error)
-		);
-
-		// Axios response interceptor for handling 401 errors
-		axios.interceptors.response.use(
-			(response) => response,
-			async (error) => {
-				const originalRequest = error.config;
-
-				if (
-					(error.response?.status === 401 ||
-						error.response?.status === 403) &&
-					!originalRequest._retry
-				) {
-					// Prevent duplicate refresh attempts
-					if (isRefreshingRef.current) {
-						return new Promise((resolve, reject) => {
-							failedQueueRef.current.push({ resolve, reject });
-						})
-							.then((token) => {
-								originalRequest.headers.Authorization = `Bearer ${token}`;
-								return axios(originalRequest);
-							})
-							.catch((err) => Promise.reject(err));
-					}
-
-					originalRequest._retry = true;
-					isRefreshingRef.current = true;
-
-					try {
-						// Refresh the token
-						const refreshResponse = await axios.post(
-							"/auth/refresh_token",
-							{},
-							{ withCredentials: true }
-						);
-						const newAccessToken =
-							refreshResponse.data.access_token;
-
-						// Update token in localStorage
-						localStorage.setItem("token", newAccessToken);
-						processQueue(null, newAccessToken);
-						isRefreshingRef.current = false;
-
-						// Retry the original request
-						originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-						return axios(originalRequest);
-					} catch (refreshError) {
-						processQueue(refreshError, null);
-						isRefreshingRef.current = false;
-						logout();
-						return Promise.reject(refreshError);
-					}
-				}
-
-				return Promise.reject(error);
-			}
 		);
 	}, [processQueue]);
 
