@@ -88,8 +88,6 @@
 }
 
 .exercise-list {
-	margin-bottom: 10px;
-	padding-bottom: min(2.5rem, 7.5%);
 	box-sizing: border-box;
 }
 

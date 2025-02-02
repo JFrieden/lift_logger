@@ -26,6 +26,8 @@ h6 {
 	--card-gray: #2d3136;
 
 	--default-radius: 8px;
+
+	--mobile-navbar-max-height: 5vh;
 }
 
 body {

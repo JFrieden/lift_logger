@@ -165,7 +165,7 @@ button:hover {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	z-index: 1000;
+	z-index: 9999;
 }
 
 .modal-content {
@@ -177,10 +177,29 @@ button:hover {
 	max-width: 500px; /* Limit width on desktop */
 	max-height: 90%; /* Prevent excessive height */
 	overflow-y: auto; /* Enable scrolling for tall forms */
+	animation: modalBounce 0.3s ease-in;
+}
+
+@keyframes modalBounce {
+	0% {
+		transform: scale(0.95);
+		opacity: 0;
+	}
+	50% {
+		transform: scale(1.05);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1);
+	}
 }
 
 body.modal-open {
 	overflow-y: hidden;
 	position: fixed;
 	width: 100%;
+}
+
+.mobile-nav {
+	max-height: var(--mobile-navbar-max-height);
 }
