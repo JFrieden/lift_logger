@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "../axios_instance";
 import { FaCirclePlus } from "react-icons/fa6";
-import { swalBasic } from "./SwalCardMixins";
+import { swalBasic, swalConfirmCancel } from "./SwalCardMixins";
 import { debounce } from "lodash";
 import ExerciseModal from "./ExerciseModal";
 
@@ -44,7 +44,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		}));
 	};
 
-	const handleSubmitNewExercise = async () => {
+	const handleSubmitNewExercise = async ({ doForceCreate = false }) => {
 		if (formData.newMovementName.trim() === "") {
 			alert("Please provide a valid name for the new exercise.");
 			return;
@@ -52,7 +52,10 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		try {
 			const response = await axios.post("/movements", {
 				name: formData.newMovementName.trim(),
+				forceCreate: doForceCreate,
 			});
+
+			console.log(response);
 
 			const newMovement = response.data.movement;
 
@@ -65,9 +68,31 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 		} catch (error) {
 			console.error("Error creating new movement: ", error);
 			if (error.status === 409) {
-				swalBasic.fire({
-					text: `Error Creating ${formData.newMovementName}: ${error.response.data.error}`,
-				});
+				swalConfirmCancel
+					.fire({
+						title: error.response.data.requiresConfirmation
+							? ""
+							: error.response.data.warning,
+						text: error.response.data.requiresConfirmation
+							? error.response.data.warning
+							: "",
+						showCancelButton:
+							error.response.data.requiresConfirmation,
+						showConfirmButton:
+							error.response.data.requiresConfirmation,
+						confirmButtonText: "Add",
+						icon: error.response.data.requiresConfirmation
+							? null
+							: "error",
+						timer: error.response.data.requiresConfirmation
+							? 0
+							: 750,
+					})
+					.then(async (result) => {
+						if (result.isConfirmed) {
+							handleSubmitNewExercise({ doForceCreate: true });
+						}
+					});
 			} else {
 				swalBasic.fire("Failure Creating New Exercise: ", error.status);
 			}
