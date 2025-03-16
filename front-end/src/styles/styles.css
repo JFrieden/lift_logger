@@ -3,7 +3,7 @@
 	height: 100vh;
 	margin: 0;
 	font-size: 16px;
-	padding: 10px;
+	padding: 15px;
 }
 
 /* Make the App component take the full height */
@@ -107,6 +107,36 @@ button:hover {
 	.auth-container {
 		padding: 40px;
 	}
+	#root {
+		padding-left: 79px;
+		transition: padding-left 0.3s ease-in-out;
+	}
+
+	#root:has(.desktop-nav:hover) {
+		padding-left: 207px;
+	}
+
+	.desktop-nav {
+		transition: width 0.3s ease-in-out;
+	}
+	.desktop-nav {
+		width: 64px; /* Collapsed width */
+	}
+	.desktop-nav span {
+		opacity: 0; /* Initially hidden */
+		visibility: hidden; /* Hide the label text */
+		transition: opacity 0.3s ease-in-out, visibility 0s 0.3s; /* Make opacity change smooth */
+	}
+
+	.desktop-nav.group:hover span {
+		opacity: 1; /* Show the label when expanded */
+		visibility: visible; /* Make the label text visible when expanded */
+		transition: opacity 0.3s ease-in-out, visibility 0s 0s; /* Visibility becomes instant after opacity */
+	}
+
+	.desktop-nav .flex:first-child {
+		border-top-right-radius: 2rem; /* Apply the different radius to the first item */
+	}
 }
 
 .delete-button {
@@ -202,4 +232,31 @@ body.modal-open {
 
 .mobile-nav {
 	max-height: var(--mobile-navbar-max-height);
+}
+
+.desktop-nav {
+	border-right: 2px solid var(--card-gray);
+	border-top-right-radius: 2rem;
+	border-bottom-right-radius: 2rem;
+	border-top: 2px solid var(--card-gray);
+	border-bottom: 2px solid var(--card-gray);
+}
+
+.desktop-nav .flex span {
+	display: block; /* Ensure that span takes up its own line */
+	opacity: 0; /* Initially hidden */
+	visibility: hidden; /* Hides the label text */
+	white-space: nowrap; /* Prevents text from wrapping */
+	max-width: 0; /* Start with 0 width to prevent the label from occupying space */
+	overflow: hidden; /* Hide any content that overflows */
+	transition: opacity 0.3s ease-in-out, max-width 0.3s ease-in-out,
+		visibility 0s 0.3s;
+}
+
+.desktop-nav.group:hover .flex span {
+	opacity: 1; /* Show the label text */
+	visibility: visible; /* Make the label visible */
+	max-width: 200px; /* Set the max-width when expanded */
+	transition: opacity 0.3s ease-in-out, max-width 0.3s ease-in-out,
+		visibility 0s 0s;
 }

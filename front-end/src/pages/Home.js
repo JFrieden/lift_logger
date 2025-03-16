@@ -72,23 +72,6 @@ const Home = () => {
 								? ", " + user.user_metadata.name.split(" ")[0]
 								: ""}
 						</h2>
-						{!isMobile && (
-							<button
-								className="icon-left-button small-button icon-txt-wrapper inline-flex items-center"
-								onClick={() => openNewLiftModal()}
-							>
-								<FaCirclePlus
-									style={{
-										marginRight: "5px",
-										fontSize: "1.5em", // You can adjust the size of the icon here if needed
-									}}
-									className="self-center"
-								/>
-								<h2 className="m-0 leading-tight">
-									Create New Lift
-								</h2>
-							</button>
-						)}
 					</div>
 
 					<hr />
