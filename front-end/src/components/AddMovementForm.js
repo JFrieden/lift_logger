@@ -45,7 +45,11 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 	};
 
 	const handleSubmitNewExercise = async ({ doForceCreate = false }) => {
-		if (formData.newMovementName.trim() === "") {
+		if (
+			!formData.newMovementName ||
+			formData?.newMovementName.trim() === ""
+		) {
+
 			alert("Please provide a valid name for the new exercise.");
 			return;
 		}
@@ -65,6 +69,12 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 				searchTerm: newMovement.name,
 			}));
 			handleSearch(formData.searchTerm);
+
+			swalBasic.fire({
+				icon: "success",
+				timer: 500,
+				showConfirmButton: false,
+			});
 		} catch (error) {
 			console.error("Error creating new movement: ", error);
 			if (error.status === 409) {

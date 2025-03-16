@@ -15,9 +15,9 @@ const toTitleCase = (str) => {
 
 // Determine a threshold based on input length. Longer inputs
 // can have more errors or variations, so a higher threhshold.
-const getNameLevenshteinThreshold = (name) => 1 + Math.trunc(name.length / 7);
+const getNameLevenshteinThreshold = (name) => 1 + Math.trunc(name.length / 5);
 
-const getPrefixKey = (name) => name.split(" ")[0].toLowerCase();
+const getPrefixKey = (name) => name.substring(0, 3).toLowerCase();
 
 const normalizeName = (name) => natural.PorterStemmer.stem(name.toLowerCase());
 
@@ -26,23 +26,41 @@ const checkNameExists = async (name) => {
 
 	const searchKey = getPrefixKey(name);
 
-	const { data: potentialMatches, error } = await supabase
+	console.log("search key:", searchKey);
+
+	let { data: potentialMatches, error: mvmntsError } = await supabase
 		.from("movements")
 		.select("name")
 		.ilike("name_prefix_idx_key", `${searchKey}%`);
 
-	if (error) {
-		console.error("Error fetching movements:", error);
+	if (mvmntsError) {
+		console.error("Error fetching movements with prefix key:", error);
 		return { warning: null };
 	}
 
+	if (potentialMatches.length === 0) {
+		const { data, error } = await supabase.from("movements").select("name");
+
+		if (error) {
+			console.error("Error fetching from all movements:", error);
+			return { warning: null };
+		}
+		potentialMatches = data;
+	}
+
+	const threshold = getNameLevenshteinThreshold(titleCasedName);
+	console.log("Threshold:", threshold);
 	// Levenshtein + Stemming for similarity check:
+	let ret_val = null;
+	let closest = threshold + 1;
 	for (const { name: existingName } of potentialMatches) {
 		// Fixed potenentialMatches -> potentialMatches
+		console.log("Checking against:", existingName);
 		const distance = levenshtein.get(
 			normalizeName(titleCasedName),
 			normalizeName(existingName)
 		);
+		console.log("|- Distance:", distance);
 		if (titleCasedName === existingName) {
 			return {
 				warning: `'${existingName}' already exists.`,
@@ -50,14 +68,17 @@ const checkNameExists = async (name) => {
 				exactMatch: true,
 			};
 		}
-		if (distance <= getNameLevenshteinThreshold(titleCasedName)) {
-			return {
+		if (distance <= threshold && distance < closest) {
+			closest = distance;
+			ret_val = {
 				warning: `A similar movement called '${existingName}' already exists. Are you sure you want to add '${titleCasedName}'?`,
 				match: true,
 				exactMatch: false,
 			};
 		}
 	}
+	if (ret_val) return ret_val;
+
 	return { warning: null, match: false, exactMatch: false };
 };
 
