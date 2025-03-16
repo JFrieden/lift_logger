@@ -49,7 +49,6 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 			!formData.newMovementName ||
 			formData?.newMovementName.trim() === ""
 		) {
-
 			alert("Please provide a valid name for the new exercise.");
 			return;
 		}
