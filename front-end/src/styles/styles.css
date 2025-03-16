@@ -113,7 +113,7 @@ button:hover {
 	}
 
 	#root:has(.desktop-nav:hover) {
-		padding-left: 207px;
+		padding-left: 175px;
 	}
 
 	.desktop-nav {

@@ -83,8 +83,11 @@ const NavBar = () => {
 	const { openNewLiftModal } = useNewLiftModal();
 
 	const isActive = (path) => location.pathname === path;
-	const activeStyle = { color: "slategray", fontSize: "2.5em" };
-	const inactiveStyle = { fontSize: "2.5em" };
+	const activeStyle = {
+		color: "slategray",
+		fontSize: isMobile ? "2.5em" : "2em",
+	};
+	const inactiveStyle = { fontSize: isMobile ? "2.5em" : "2em" };
 
 	const navItems = [
 		{ icon: <AiOutlineAreaChart />, label: "Charts", path: "/charts" },
@@ -120,7 +123,7 @@ const NavBar = () => {
 	} else {
 		return (
 			<div
-				className="desktop-nav group fixed top-0 left-0 h-full w-16 bg-[var(--background-gray)] text-white flex flex-col hover:w-48 transition-all duration-300"
+				className="desktop-nav group fixed top-0 left-0 h-full w-16 bg-[var(--background-gray)] text-white flex flex-col hover:w-40 transition-all duration-300"
 				style={{
 					zIndex: 1000,
 				}}
