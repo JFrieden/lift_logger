@@ -78,6 +78,7 @@ const checkNameExists = async (name) => {
 		}
 	}
 	if (ret_val) return ret_val;
+
 	return { warning: null, match: false, exactMatch: false };
 };
 

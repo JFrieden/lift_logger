@@ -49,6 +49,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 			!formData.newMovementName ||
 			formData?.newMovementName.trim() === ""
 		) {
+
 			alert("Please provide a valid name for the new exercise.");
 			return;
 		}
@@ -57,6 +58,8 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 				name: formData.newMovementName.trim(),
 				forceCreate: doForceCreate,
 			});
+
+			console.log(response);
 
 			const newMovement = response.data.movement;
 
@@ -147,8 +150,8 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 	const handleSubmitLog = async (log) => {
 		if (formData.selectedMovement) {
 			// TODO: There's a cheaper way to get the order than this.
-			const liftLen =
-				(await axios.get(`lift_logs/${liftId}`)).data.length + 1;
+			const maxOrder = (await axios.put(`lift_logs/order/${liftId}`)).data
+				.maxOrder;
 
 			const newLiftLog = {
 				movement_id: log.movement_id,
@@ -158,7 +161,7 @@ const AddMovementForm = ({ liftId, onMovementAdded }) => {
 				reps: log.reps,
 				weight: log.weight,
 				notes: log.notes,
-				order: liftLen,
+				order: maxOrder + 1,
 			};
 			const response = await axios.post("/lift_logs", newLiftLog);
 			onMovementAdded(response.data.lift_log);
