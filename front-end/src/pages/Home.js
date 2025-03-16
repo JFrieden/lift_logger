@@ -5,14 +5,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaCirclePlus } from "react-icons/fa6";
 import Spinner from "../components/Spinner";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "../axios_instance";
 import LiftGridContainer from "../components/LiftGridContainer";
 import { debounce } from "lodash";
 import { useMediaQuery } from "react-responsive";
-import { useNewLiftModal } from "../contexts/NewLiftModalContext";
 
 const Home = () => {
 	const { user } = useAuth();
@@ -20,7 +18,6 @@ const Home = () => {
 	const [searchTerm, setSearchTerm] = useState(""); // Only used for asthetic concern
 	const navigate = useNavigate();
 	const isMobile = useMediaQuery({ maxWidth: 768 });
-	const { openNewLiftModal } = useNewLiftModal();
 
 	useEffect(() => {
 		const fetchLifts = async () => {
@@ -28,7 +25,7 @@ const Home = () => {
 				const token = localStorage.getItem("token");
 				const response = await axios.get("/lifts", {
 					headers: { Authorization: `Bearer ${token}` },
-					params: { limit: isMobile ? 12 : 30 },
+					params: { limit: 12 },
 				});
 				setLifts(response.data);
 			} catch (error) {
@@ -51,7 +48,7 @@ const Home = () => {
 		if (!term) {
 			params.limit = 12;
 		} else {
-			params.limit = 36;
+			params.limit = 24;
 		}
 
 		const response = await axios.get("/lifts", {
